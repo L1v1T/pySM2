@@ -368,7 +368,7 @@ def bytes_to_point(a, b, S):
 		PC = S[0]
 		for i in range(1,l):
 			X.append(S[i])
-		for i in range(l+1, 2l):
+		for i in range(l+1, 2*l):
 			Y.append(s[i])
 	elif len(S) == l+1: #压缩表示形式
 		PC = S[0]
