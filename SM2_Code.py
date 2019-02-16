@@ -1,4 +1,6 @@
 import math
+from Integer import *
+import config
 # 4.2.1 整数到字节串的转换
 '''
 input：非负整数x，以及字节串的目标长度k  
@@ -23,7 +25,7 @@ def int_to_bytes(x, k):
 	return M
 #''' 
 ### test int_to_bytes ###
-#print(int_to_bytes(255,5))   #[0, 0, 0, 0, 255]
+#print(int_to_bytes(1024,5))   #[0, 0, 0, 0, 255]
 #'''
 
 # 4.2.2 字节串到整数
@@ -104,27 +106,7 @@ def bytes_to_bits(M):
 	s = bin(s)
 	return s
 ### test bytes_to_bits ###
-#print(bytes_to_bits([2,2])) 
-
-# 判断素数 #
-def isPrime(n):    
-	if n <= 1:
-		return False
-	i = 2
-	while i*i <= n: 
-		if n % i == 0:  
-			return False
-		i += 1
-	return True
-
-# 判断是否为2的幂
-def is_Power_of_two(n):
-	if n>0:
-		if (n&(n-1))==0 :
-			return True
-	return False
-#if is_Power_of_two(45):
-#	print('true')
+print(bytes_to_bits([2,2])) 
 
 # 4.2.5 域元素到字节串
 '''
@@ -135,6 +117,7 @@ def ele_to_bytes(a):
 	#print("--- 域元素到字节串的转换 ---")
 	S = []
 
+	q = config.get_q()
 	# q为奇素数
 	if (a>=0 and a<=q-1):
 		t = math.ceil(math.log(q,2))
@@ -150,6 +133,7 @@ def ele_to_bytes_2m(a):
 	#print("--- 域元素到字节串的转换 ---")
 	S = []
 	
+	q = config.get_q()
 	# q为2的幂
 	if type(a)==str and a[0:2] == '0b':
 		m = math.log(q, 2)
@@ -230,15 +214,16 @@ input：域Fq中的元素a，模数q
 output：整数x
 '''
 def ele_to_int(a):
-	#print("--- 域元素到字节串的转换 ---")
+	#print("--- 域元素到整数的转换 ---")
 	x = 0
 	 # q为奇素数
 	x = a
 	return x
 
 def ele_to_int_2m(a):
-	#print("--- 域元素到字节串的转换 ---")
+	#print("--- 域元素到整数的转换 ---")
 	x = 0
+	q = config.get_q()
 	# q为2的幂
 	if type(a)==str and a[0:2] == '0b':
 		m = math.log(q, 2)
@@ -349,8 +334,8 @@ def point_to_bytes(x, y):
 		S.append(n)
 	return S
 ### test point_to_bytes
-q = 1024
-print(point_to_bytes(256, 256))
+#config.set_q(1024)
+#print(point_to_bytes(256, 256))
 
 
 # 4.2.9 字符串到点
@@ -359,6 +344,7 @@ input：定义Fq上椭圆曲线的域元素a、b，字节串S
 output：椭圆曲线上的点P=(xp,yp)，且P!=Q
 '''
 def bytes_to_point(a, b, S):
+	q = config.get_q()
 	l = math.ceil(math.lb(q)/8)
 	PC = []
 	X = []
