@@ -1,6 +1,7 @@
 import math
 from Integer import *
 import config
+from Point import *
 # 4.2.1 整数到字节串的转换
 '''
 input：非负整数x，以及字节串的目标长度k  
@@ -76,8 +77,10 @@ def bits_to_bytes(s):
 					#print(i , "-", j, "-", m-(8*i+j)-1, "-", temp)
 				j = j + 1
 			temp = temp[::-1]
+			temp = int(temp, 2)
 			M.append(temp)
 			#M = M + temp
+		M.reverse()
 	else:
 		print("*** ERROR: 输入必须为比特串 *** function：bits_to_bytes(s) ***")
 		return -1;
@@ -110,6 +113,7 @@ def bytes_to_bits(M):
 		j = j + 1
 		#print(s)
 	s = bin(s)
+	M.reverse()
 	#print(s)
 	return s
 ### test bytes_to_bits ###
@@ -169,8 +173,20 @@ def ele_to_bytes(a):
 			print("*** ERROR: 域元素须在区间[0, q-1]上 *** function：ele_to_bytes(a) ***")
 			return -1;
 	elif is_Power_of_two(q):    # q为2的幂
+		#print(a)
+		#print(type(a))
 		if type(a)==str and a[0:2] == '0b':
-			m = math.log(q, 2)
+			m = math.ceil(math.log(q, 2))
+			#print(m)
+			temp = a
+			a = ''
+			for i in range(0, 2):
+				a = a + temp[i]
+			for i in range(0, m-len(temp)+2):
+				a = a + '0'
+			for i in range(0, len(temp)-2):
+				a = a + temp[i+2]
+			print(a)
 			if len(a)-2 == m:
 				S = bits_to_bytes(a)
 			else:
@@ -294,7 +310,9 @@ output：字节串S。
 			若选用压 缩表示形式，则输出字节串长度为l+1。
 			（l=lb(q)/8(取上整)）
 '''
-def point_to_bytes(x, y):
+def point_to_bytes(point):
+	x = point.x
+	y = point.y
 	print('x', x)
 	S = []
 	PC = []
@@ -336,8 +354,11 @@ def point_to_bytes(x, y):
 	##### d. 混合表示形式 #####
 	# d.1 将域元素y转换成长度为l的字节串Y
 	Y = ele_to_bytes(y)
+	print('字节串Y', Y)
 	# d.2 计算比特y1
+	print('1', Y)
 	y1_temp = bytes_to_bits(Y)#[math.ceil(math.log(q,2)/8)*8-1:math.ceil(math.log(q,2)/8)*8]
+	print('2', Y)
 	y1 = y1_temp[len(y1_temp)-1:len(y1_temp)]
 	# d.3 若y1=0，则令PC=06；若y1=1，则令PC=07
 	if y1 == '0':
@@ -347,15 +368,19 @@ def point_to_bytes(x, y):
 	else:
 		print('ERROR')
 	# d.4 字节串S=PC||X||Y
+	print('3', Y)
 	S.append(PC)
 	for m in X:
 		S.append(m)
+	print('4', Y)
 	for n in Y:
+		print(n)
 		S.append(n)
 	return S
 ### test point_to_bytes
 #config.set_q(1024)
-#print(point_to_bytes(256, 256))
+#point = Point('0b100000000', '0b100000000')
+#print(point_to_bytes(point))
 
 
 # 4.2.9 字符串到点
@@ -364,8 +389,10 @@ input：定义Fq上椭圆曲线的域元素a、b，字节串S
 output：椭圆曲线上的点P=(xp,yp)，且P!=Q
 '''
 def bytes_to_point(a, b, S):
-	q = config.config.get_q()()
-	l = math.ceil(math.lb(q)/8)
+	q = config.get_q()
+	print('q',q)
+	l = math.ceil(math.log(q, 2)/8)
+	print('l', l)
 	PC = []
 	X = []
 	Y = []
@@ -375,7 +402,7 @@ def bytes_to_point(a, b, S):
 		for i in range(1,l):
 			X.append(S[i])
 		for i in range(l+1, 2*l):
-			Y.append(s[i])
+			Y.append(S[i])
 	elif len(S) == l+1: #压缩表示形式
 		PC = S[0]
 		for i in range(1,l):
@@ -383,7 +410,7 @@ def bytes_to_point(a, b, S):
 	else:
 		print('ERROR')
 	# b. 将X转换成与元素x
-	x = bytes_to_ele(X)
+	x = bytes_to_ele(X, S)
 	##### c. 压缩表示形式 #####
 	y1 = ''
 	# c.1 and c.2
@@ -407,3 +434,5 @@ def bytes_to_point(a, b, S):
 	# f. 
 	# g. 
 	return 1
+config.set_q(1024)
+print(bytes_to_point( 256, 256,['06', 1, 0, 1, 0]))
