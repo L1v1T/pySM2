@@ -240,7 +240,7 @@ def bytes_to_ele(q, S):
 ### test bytes_to_ele(q, S) ###
 #print(bytes_to_ele(257, '20'))
 #print(bytes_to_ele(256, [232]))
-#print(bytes_to_ele(1024, [1, 86]))
+print(bytes_to_ele(1024, [1, 86]))
 
 # 4.2.7 域元素到整数
 '''
@@ -399,9 +399,9 @@ def bytes_to_point(a, b, S):
 	# a. 
 	if len(S) == 2*l+1: #为压缩表示形式或者混合表示形式
 		PC = S[0]
-		for i in range(1,l):
+		for i in range(1,l+1):
 			X.append(S[i])
-		for i in range(l+1, 2*l):
+		for i in range(l+1, 2*l+1):
 			Y.append(S[i])
 	elif len(S) == l+1: #压缩表示形式
 		PC = S[0]
@@ -409,8 +409,13 @@ def bytes_to_point(a, b, S):
 			X.append(S[i])
 	else:
 		print('ERROR')
+	print(X)
+
 	# b. 将X转换成与元素x
-	x = bytes_to_ele(X, S)
+	x = bytes_to_ele(q, X)
+	print(PC)
+
+	print(x)
 	##### c. 压缩表示形式 #####
 	y1 = ''
 	# c.1 and c.2
@@ -418,21 +423,27 @@ def bytes_to_point(a, b, S):
 		y1 = '0'
 	elif PC == '03':
 		y1 = '1'
-	else:
-		print('ERROR in bytes_to_point')
-	# c.3
 	##### d. 未压缩表示形式 #####
-	if PC == '04':
-		y = bytes_to_ele(Y)
-	else:
-		print('ERROR in bytes_to_point')
+	elif PC == '04':
+		y = bytes_to_ele(q, Y)
 	##### e. 混合表示形式 #####
-	# e.1
-	# e.2 执行e.2.1或e.2.2
-	# # e.2.1
-	# # e.2.2
+	# e.1 and e.2
+	elif PC == '06' or '07':
+		y = bytes_to_ele(q, Y)
+	else:
+		pass#print('ERROR in bytes_to_point')
 	# f. 
+	result = 0
+	x = int(x,2)
+	y = int(y,2)
+	if (isPrime(q) and q%2 ==1):   # q为奇素数
+		if (y**2)%q != (x**3 + a*x + b)%q:
+			return -1
+	elif is_Power_of_two(q):
+		if (y**2 + x*y) != (x**3 + a*x + b):
+			return -1
 	# g. 
-	return 1
+	point = Point(x,y)
+	return point
 #config.set_q(1024)
-#print(bytes_to_point( 256, 256,['06', 1, 0, 1, 0]))
+#print(bytes_to_point( 1, 1,['06', 1, 0, 1, 0]))
