@@ -87,13 +87,33 @@ def field_ele_times(a, b):
 # 椭圆曲线元素判断
 # 元素为零
 def ECG_ele_is_zero(p):
-    pass
+    if p.x == 0 and p.y == 0:
+        return True
+    else:
+        return False
 # 元素互为逆元素
 def ECG_is_inverse_ele(p1, p2):
-    pass
+    q = config.get_q()
+    # q 为素数
+    if isPrime(q):
+        if p1.x == p2.x and p1.y == -p2.y:
+            return True
+        else:
+            return False
+    elif is_Power_of_two(q):
+        if p1.x == p2.x and p2.y == p1.x + p1.y:
+            return True
+        else:
+            return False
+    else:
+        print("*** ERROR: q 不是素数或者 2 的幂 *** function: ECG_is_inverse_ele ***")
+        return False
 # 元素相等
 def ECG_ele_equal(p1, p2):
-    pass
+    if p1.x == p2.x and p1.y == p2.y:
+        return True
+    else:
+        return False
 # 椭圆曲线求 2 倍点
 '''
 input: 椭圆曲线点 p
@@ -110,14 +130,38 @@ def ECG_ele_add(p1, p2):
     q = config.get_q()
     # Fp 上的椭圆曲线群
     if isPrime(q):
-        if ECG_ele_is_zero(p1) or ECG_ele_is_zero(p1):
-            pass
+        if ECG_ele_is_zero(p1):
+            return p2
+        elif ECG_ele_is_zero(p2):
+            return p1
         elif ECG_is_inverse_ele(p1, p2):
-            pass
+            return Point(0, 0)
         elif ECG_ele_equal(p1, p2):
-            pass
+            lam = (3 * (p1.x**2) + config.get_a()) / (2 * p1.y)
+            x = lam**2 - 2 * p1.x
+            y = lam * (p1.x - x) - p1.y
+            return Point(x, y)
         else:
             lam = (p2.y - p1.y) / (p2.x - p1.x)
             x = lam * lam - p1.x - p2.x
             y = lam * (p1.x - x) - p1.y
+            return Point(x, y)
+
+    # F2^m 上的椭圆曲线
+    if is_Power_of_two(q):
+        if ECG_ele_is_zero(p1):
+            return p2
+        elif ECG_ele_is_zero(p2):
+            return p1
+        elif ECG_is_inverse_ele(p1, p2):
+            return Point(0, 0)
+        elif ECG_ele_equal(p1, p2):
+            lam = p1.x + (p1.y / p1.x)
+            x = lam**2 + lam + config.get_a()
+            y = p1.x**2 + (lam + 1) * x
+            return Point(x, y)
+        else:
+            lam = (p1.y + p2.y) / (p1.x + p2.x)
+            x = lam**2 + lam + p1.x + p2.x + config.get_a()
+            y = lam * (p1.x + x) + x + p1.y
             return Point(x, y)

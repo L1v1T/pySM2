@@ -29,3 +29,21 @@ def get_fx():
 #print(fx)
 #set_fx('0b10101111')
 #print(fx)
+
+# 椭圆曲线参数
+a = 0
+b = 0
+
+def set_a(ia):
+    global a
+    a = ia
+
+def get_a():
+    return a
+
+def set_b(ib):
+    global b
+    b = ib
+
+def get_b():
+    return b
