@@ -96,28 +96,36 @@ output：长度为m的比特串s，其中m=8k
 '''
 def bytes_to_bits(M):
 	#print("--- 字节串到比特串的转换 ---")
+	#print('M',M)
 	k = len(M)
+	#print('k', k)
 	m = 8*k
+	#print('m', m)
 	temp = ''
 	s = 0
 	M.reverse()
+	j = 0
 	for i in M:
-		s = s*256 + i
+		s = s + i*(256**j)
+		j = j + 1
+		#print(s)
 	s = bin(s)
+	#print(s)
 	return s
 ### test bytes_to_bits ###
-print(bytes_to_bits([2,2])) 
+#print(bytes_to_bits([2,2])) 
 
 # 4.2.5 域元素到字节串
 '''
 input：Fq中的元素a，模数q
 output：长度l=t/8（取上整）的字节串S，其中t=lb(q)(取上整)
 '''
+'''
 def ele_to_bytes(a):
 	#print("--- 域元素到字节串的转换 ---")
 	S = []
 
-	q = config.get_q()
+	q = config.config.get_q()()
 	# q为奇素数
 	if (a>=0 and a<=q-1):
 		t = math.ceil(math.log(q,2))
@@ -133,7 +141,7 @@ def ele_to_bytes_2m(a):
 	#print("--- 域元素到字节串的转换 ---")
 	S = []
 	
-	q = config.get_q()
+	q = config.config.get_q()()
 	# q为2的幂
 	if type(a)==str and a[0:2] == '0b':
 		m = math.log(q, 2)
@@ -148,16 +156,17 @@ def ele_to_bytes_2m(a):
 	
 	return S
 '''
-def ele_to_bytes(a, q):
+def ele_to_bytes(a):
 	#print("--- 域元素到字节串的转换 ---")
 	S = []
+	q = config.get_q()
 	if (isPrime(q) and q%2 ==1):   # q为奇素数
 		if (a>=0 and a<=q-1):
 			t = math.ceil(math.log(q,2))
 			l = math.ceil(t/8)
 			S = int_to_bytes(a, l)
 		else:
-			print("*** ERROR: 域元素须在区间[0, q-1]上 *** function：ele_to_bytes(a, q) ***")
+			print("*** ERROR: 域元素须在区间[0, q-1]上 *** function：ele_to_bytes(a) ***")
 			return -1;
 	elif is_Power_of_two(q):    # q为2的幂
 		if type(a)==str and a[0:2] == '0b':
@@ -165,19 +174,19 @@ def ele_to_bytes(a, q):
 			if len(a)-2 == m:
 				S = bits_to_bytes(a)
 			else:
-				print("*** ERROR: 域元素必须为长度为m的比特串 *** function：ele_to_bytes(a, q)")
+				print("*** ERROR: 域元素必须为长度为m的比特串 *** function：ele_to_bytes(a)")
 				return -1;
 		else:
-			print("*** ERROR: 输入必须为比特串 *** function：ele_to_bytes(a, q) ***")
+			print("*** ERROR: 输入必须为比特串 *** function：ele_to_bytes(a) ***")
 			return -1;
 	else:
-		print("*** ERROR: q不满足奇素数或2的幂 *** function：ele_to_bytes(a, q) ***")
+		print("*** ERROR: q不满足奇素数或2的幂 *** function：ele_to_bytes(a) ***")
 		return -1;
 	return S
-'''
+
 ### test ele_to_bytes ###
 #print(ele_to_bytes(256, 257))
-#print(ele_to_bytes('0b101101010', 512))
+#print(ele_to_bytes('0b101101010'))
 
 # 4.2.6 字节串到域元素
 '''
@@ -195,8 +204,16 @@ def bytes_to_ele(q, S):
 			print("*** ERROR: 域元素须在区间[0, q-1]上 *** function：bytes_to_ele(q, S) ***")
 			return -1;
 	elif is_Power_of_two(q):    # q为2的幂
-		m = math.log(q, 2)
-		a = bytes_to_bits(S)
+		m = math.ceil(math.log(q, 2))
+		#print('byte2bits m', m)
+		temp = bytes_to_bits(S)
+		#print(temp)
+		for i in range(0, 2):
+			a = a + temp[i]
+		for i in range(0, m-len(temp)+2):
+			a = a + '0'
+		for i in range(0, len(temp)-2):
+			a = a + temp[i+2]
 		if not len(a)-2 == m:
 			print("*** ERROR: 域元素必须为长度为m的比特串 *** function：bytes_to_ele(q, S)")
 			return -1;
@@ -207,11 +224,13 @@ def bytes_to_ele(q, S):
 ### test bytes_to_ele(q, S) ###
 #print(bytes_to_ele(257, '20'))
 #print(bytes_to_ele(256, [232]))
+print(bytes_to_ele(1024, [1, 86]))
 
 # 4.2.7 域元素到整数
 '''
 input：域Fq中的元素a，模数q
 output：整数x
+'''
 '''
 def ele_to_int(a):
 	#print("--- 域元素到整数的转换 ---")
@@ -223,7 +242,7 @@ def ele_to_int(a):
 def ele_to_int_2m(a):
 	#print("--- 域元素到整数的转换 ---")
 	x = 0
-	q = config.get_q()
+	q = config.config.get_q()()
 	# q为2的幂
 	if type(a)==str and a[0:2] == '0b':
 		m = math.log(q, 2)
@@ -239,9 +258,10 @@ def ele_to_int_2m(a):
 		return -1;
 	return x
 '''
-def ele_to_int(a, q):
+def ele_to_int(a):
 	#print("--- 域元素到字节串的转换 ---")
 	x = 0
+	q = config.get_q()
 	if (isPrime(q) and q%2 ==1):   # q为奇素数
 		x = a
 	elif is_Power_of_two(q):    # q为2的幂
@@ -261,7 +281,7 @@ def ele_to_int(a, q):
 		print("*** ERROR: q不满足奇素数或2的幂 *** function：ele_to_int(a, q) ***")
 		return -1;
 	return x
-'''
+
 ### test ele_to_int ###
 #print(ele_to_int(256, 257))
 #print(ele_to_int('0b1011', 16))
@@ -344,7 +364,7 @@ input：定义Fq上椭圆曲线的域元素a、b，字节串S
 output：椭圆曲线上的点P=(xp,yp)，且P!=Q
 '''
 def bytes_to_point(a, b, S):
-	q = config.get_q()
+	q = config.config.get_q()()
 	l = math.ceil(math.lb(q)/8)
 	PC = []
 	X = []
@@ -386,4 +406,4 @@ def bytes_to_point(a, b, S):
 	# # e.2.2
 	# f. 
 	# g. 
-	return
+	return 1
