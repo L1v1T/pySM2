@@ -7,6 +7,8 @@ input: 两个多项式（比特串）
 output: 两个多项式的乘积
 '''
 def polynomial_times(a, b):
+    #print("--- 多项式 乘法 ---")
+
     a_bytes = bits_to_bytes(a)
     a_int = bytes_to_int(a_bytes)
     b_bytes = bits_to_bytes(b)
@@ -35,6 +37,8 @@ input: 被除多项式 a 和除多项式 b
 output: a/b 所余的多项式
 '''
 def polynomial_a_mod_b(a, b):
+    #print("--- 多项式 取模 ---")
+
     a_bytes = bits_to_bytes(a)
     a_int = bytes_to_int(a_bytes)
     a_len = len(a_bytes)

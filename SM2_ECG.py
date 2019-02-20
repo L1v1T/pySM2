@@ -3,6 +3,7 @@ import config
 from SM2_Code import *
 import math
 from polynomial import *
+from Point import *
 
 # 3.1 有限域计算
 # 有限域加法
@@ -81,3 +82,42 @@ def field_ele_times(a, b):
 #config.set_q(32)
 #config.set_fx('0b100101')
 #print(field_ele_times('0b111', '0b1101'))
+
+# 3.2.3 椭圆曲线群
+# 椭圆曲线元素判断
+# 元素为零
+def ECG_ele_is_zero(p):
+    pass
+# 元素互为逆元素
+def ECG_is_inverse_ele(p1, p2):
+    pass
+# 元素相等
+def ECG_ele_equal(p1, p2):
+    pass
+# 椭圆曲线求 2 倍点
+'''
+input: 椭圆曲线点 p
+output: 点(P+P)
+'''
+def ECG_double_point(p):
+    pass
+# 椭圆曲线加法
+'''
+input: 椭圆曲线群中点 a 和 b
+output: 椭圆曲线群中点(a+b)
+'''
+def ECG_ele_add(p1, p2):
+    q = config.get_q()
+    # Fp 上的椭圆曲线群
+    if isPrime(q):
+        if ECG_ele_is_zero(p1) or ECG_ele_is_zero(p1):
+            pass
+        elif ECG_is_inverse_ele(p1, p2):
+            pass
+        elif ECG_ele_equal(p1, p2):
+            pass
+        else:
+            lam = (p2.y - p1.y) / (p2.x - p1.x)
+            x = lam * lam - p1.x - p2.x
+            y = lam * (p1.x - x) - p1.y
+            return Point(x, y)

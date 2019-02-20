@@ -14,9 +14,9 @@ class Point(object):
     @y.setter
     def y(self, value):
         self._y = value
-    def distance(p1,p2):
+    def distance(self,p1,p2):
         return((p1.x-p2.x)**2+(p1.y-p2.y)**2)**0.5
     def isnearby(self,p):
-        return((self.x-p2.x)**2+(self.y-p2.y)**2)**0.5
+        return((self.x-p.x)**2+(self.y-p.y)**2)**0.5
     def __str__(self):
         return '('+str(self.x)+','+str(self.y)+')'
