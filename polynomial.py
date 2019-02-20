@@ -1,0 +1,57 @@
+from SM2_Code import *
+import math
+
+# 多项式乘法 #
+'''
+input: 两个多项式（比特串）
+output: 两个多项式的乘积
+'''
+def polynomial_times(a, b):
+    a_bytes = bits_to_bytes(a)
+    a_int = bytes_to_int(a_bytes)
+    b_bytes = bits_to_bytes(b)
+    b_int = bytes_to_int(b_bytes)
+
+    # max result length
+    m = len(a) - 2 + len(b) - 2
+    m_bytes = math.ceil(float(m) / 8.0)
+
+    # counter
+    i = 0
+    # result
+    c = 0
+    while a_int != 0:
+        if a_int%2 == 1:
+            c = c ^ (b_int << i)
+        a_int = int(a_int / 2)
+        i += 1
+    return bytes_to_bits(int_to_bytes(c, m_bytes))
+### test polynomial_times ###
+#print(polynomial_times('0b111', '0b11111001'))
+
+# 多项式取模 #
+'''
+input: 被除多项式 a 和除多项式 b
+output: a/b 所余的多项式
+'''
+def polynomial_a_mod_b(a, b):
+    a_bytes = bits_to_bytes(a)
+    a_int = bytes_to_int(a_bytes)
+    a_len = len(a_bytes)
+    b_bytes = bits_to_bytes(b)
+    b_int = bytes_to_int(b_bytes)
+    b_len = len(b_bytes)
+
+    # max result length
+    m = len(b) - 1
+    m_bytes = math.ceil(float(m) / 8.0)
+
+    i = len(a) - len(b)
+    while i >= 0:
+        a_int = a_int ^ (b_int << i)
+        i = len(bytes_to_bits(int_to_bytes(a_int, a_len))) \
+            - len(bytes_to_bits(int_to_bytes(b_int, b_len)))
+    
+    return bytes_to_bits(int_to_bytes(a_int, m_bytes))
+### test polynomial_a_mod_b ###
+#print(polynomial_a_mod_b('0b1011101110', '0b111'))
