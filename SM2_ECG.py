@@ -165,3 +165,19 @@ def ECG_ele_add(p1, p2):
             x = lam**2 + lam + p1.x + p2.x + config.get_a()
             y = lam * (p1.x + x) + x + p1.y
             return Point(x, y)
+
+# 6.1 密钥对的生成 #
+'''
+input: 有效的椭圆曲线系统参数集合
+output: 与输入参数相关的一个密钥对(d, P)
+'''
+def key_pair_generation(parameters):
+    pass
+
+# 6.2 公钥的认证 #
+'''
+input: 有效的椭圆曲线系统参数集合以及一个相关的公钥
+output: 若通过验证则输出“有效：， 无效则
+'''
+def public_key_verification(parameters, public_key):
+    pass
