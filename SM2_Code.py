@@ -431,7 +431,7 @@ def bytes_to_point(a, b, S):
 	elif PC == '06' or '07':
 		y = bytes_to_ele(q, Y)
 	else:
-		pass#print('ERROR in bytes_to_point')
+		print('ERROR in bytes_to_point')
 	# f. 
 	result = 0
 	x = int(x,2)
