@@ -5,8 +5,9 @@ import math
 from polynomial import *
 from Point import *
 import random
-import hashlib
+import time
 
+'''
 # 判断是否为有限域元素 #
 def in_field(a):
     q = config.get_q()
@@ -32,6 +33,7 @@ def in_field(a):
     else:
         print("*** ERROR: 模数q不是奇素数或者2的幂 *** function: field_ele_add ***")
         return -1
+'''
 
 # 有限域加法单位元 #
 def field_ele_zero():
@@ -86,10 +88,10 @@ def field_ele_add(a, b):
     q = config.get_q()
     # q 为奇素数
     if isPrime_MR(q, 15) and q > 2:
-        if not in_field(a):
+        if not (a >= 0 and a <= q-1):
             print("*** ERROR: a不是素域中元素 *** function: field_ele_add ***")
             return -1
-        elif not in_field(b):
+        elif not (b >= 0 and b <= q-1):
             print("*** ERROR: b不是素域中元素 *** function: field_ele_add ***")
             return -1
         else:
@@ -97,7 +99,7 @@ def field_ele_add(a, b):
     # q 为 2 的幂
     elif is_Power_of_two(q):
         m = math.log2(q)
-        if not (in_field(a) and in_field(b)):
+        if not ((len(a)-2) > m and (len(b)-2) > m):
             print("*** ERROR: 参数不是二元扩域元素 *** function: field_ele_add ***")
             return -1
         else:
@@ -123,7 +125,7 @@ def field_ele_inverse_add(a):
     q = config.get_q()
     # q 为奇素数
     if isPrime_MR(q, 15) and q > 2:
-        if not in_field(a):
+        if not (a >= 0 and a <= q-1):
             print("*** ERROR: a不是域中元素 *** function: field_ele_inverse_add ***")
             return -1
         else:
@@ -131,7 +133,7 @@ def field_ele_inverse_add(a):
     # q 为 2 的幂
     elif is_Power_of_two(q):
         m = math.log2(q)
-        if not in_field(a):
+        if not (len(a)-2) > m:
             print("*** ERROR: 参数不是二元扩域元素 *** function: field_ele_inverse_add ***")
             return -1
         else:
@@ -165,10 +167,10 @@ def field_ele_times(a, b):
     q = config.get_q()
     # q 为奇素数
     if isPrime_MR(q, 15) and q > 2:
-        if not in_field(a):
+        if not (a >= 0 and a <= q-1):
             print("*** ERROR: a不是域中元素 *** function: field_ele_times ***")
             return -1
-        elif not in_field(b):
+        elif not (b >= 0 and b <= q-1):
             print("*** ERROR: b不是域中元素 *** function: field_ele_times ***")
             return -1
         else:
@@ -176,7 +178,7 @@ def field_ele_times(a, b):
     # q 为 2 的幂
     elif is_Power_of_two(q):
         m = math.log2(q)
-        if not (in_field(a) and in_field(b)):
+        if not ((len(a)-2) > m and (len(b)-2) > m):
             print("*** ERROR: 参数不是二元扩域元素 *** function: field_ele_times ***")
             return -1
         else:
@@ -203,7 +205,7 @@ def field_ele_g_pow_a(g, a):
     q = config.get_q()
     # q 为奇素数
     if isPrime_MR(q, 15) and q > 2:
-        if not in_field(g):
+        if not (g >= 0 and g <= q-1):
             print("*** ERROR: a不是域中元素 *** function: field_ele_g_pow_a ***")
             return -1
         else:
@@ -220,7 +222,7 @@ def field_ele_g_pow_a(g, a):
     # q 为 2 的幂
     elif is_Power_of_two(q):
         m = math.log2(q)
-        if not in_field(g):
+        if not (len(g)-2) > m:
             print("*** ERROR: 参数不是二元扩域元素 *** function: field_ele_g_pow_a ***")
             return -1
         else:
@@ -253,7 +255,7 @@ def field_ele_inverse_times(a):
     q = config.get_q()
     # q 为奇素数
     if isPrime_MR(q, 15) and q > 2:
-        if not in_field(a):
+        if not (a >= 0 and a <= q-1):
             print("*** ERROR: a不是域中元素 *** function: field_ele_inverse_times ***")
             return -1
         else:
@@ -261,7 +263,7 @@ def field_ele_inverse_times(a):
     # q 为 2 的幂
     elif is_Power_of_two(q):
         m = math.log2(q)
-        if not in_field(a):
+        if not (len(a)-2) > m:
             print("*** ERROR: 参数不是二元扩域元素 *** function: field_ele_inverse_times ***")
             return -1
         else:
@@ -429,13 +431,22 @@ input: 倍数 k 和椭圆曲线点 p
 output: p 的 k 倍点
 '''
 def ECG_k_point(k, p):
+    #print('[' + str(k) + ']P')
     l = int(math.log2(k)) + 1# - 1
+    #print(l)
     point_q = ECG_ele_zero()
     for i in range(0, l):
+        #print('i = ' + str(i))
         j = l - 1 - i
+        t_start = time.time()
         point_q = ECG_double_point(point_q)
+        t_end = time.time()
+        #print('double:' + str(t_end - t_start))
         if (k & (1 << j)) == (1 << j):
+            t_start = time.time()
             point_q = ECG_ele_add(point_q, p)
+            t_end = time.time()
+            #print('add:' + str(t_end - t_start))
     return point_q
 
 # Fp 椭圆曲线测试 #
@@ -480,7 +491,6 @@ def key_pair_generation(parameters):
         config.set_fx(parameters['f(x)'])
 
     d = random.randint(1, n - 2)
-    d = 121
     p = ECG_k_point(d, point_g)
     keypair = []
     keypair.append(d)
@@ -495,7 +505,7 @@ parameters = {  'q' : 211,
                 'n' : 211, 
                 'G' : Point(2, 2)}
 '''
-
+'''
 parameters = {  'q' : 0xBDB6F4FE3E8B1D9E0DA8C0D46F4C318CEFE4AFE3B6B8551F, 
                 'f(x)' : polynomial_zero(), 
                 'a' : 0xBB8E5E8FBC115E139FE6A814FE48AAA6F0ADA1AA5DF91985, 
@@ -507,6 +517,7 @@ parameters = {  'q' : 0xBDB6F4FE3E8B1D9E0DA8C0D46F4C318CEFE4AFE3B6B8551F,
 key = key_pair_generation(parameters)
 print(key[0])
 print(key[1])
+'''
 
 # 6.2 公钥的认证 #
 '''
@@ -529,7 +540,8 @@ def public_key_verification(parameters, public_key):
             print("*** ERROR: 公钥为无穷远点 *** function: public_key_verification")
             print("无效")
             return False
-        if not (in_field(public_key.x) and in_field(public_key.y)):
+        if not ((public_key.x >= 0 and public_key.x <= q-1) 
+            and (public_key.y >= 0 and public_key.y <= q-1)):
             print("*** ERROR: 公钥坐标不是素域中元素 *** function: public_key_verification")
             print("无效")
             return False
@@ -552,7 +564,8 @@ def public_key_verification(parameters, public_key):
             print("*** ERROR: 公钥为无穷远点 *** function: public_key_verification")
             print("无效")
             return False
-        if not (in_field(public_key.x) and in_field(public_key.y)):
+        m = math.log2(q)
+        if not ((len(public_key.x)-2) > m and (len(public_key.y)-2) > m):
             print("*** ERROR: 公钥坐标不是素域中元素 *** function: public_key_verification")
             print("无效")
             return False
@@ -578,7 +591,7 @@ def public_key_verification(parameters, public_key):
         print("无效")
         return False
 ### test public_key_verification ###
-'''
+
 parameters = {  'q' : 0xBDB6F4FE3E8B1D9E0DA8C0D46F4C318CEFE4AFE3B6B8551F, 
                 'f(x)' : polynomial_zero(), 
                 'a' : 0xBB8E5E8FBC115E139FE6A814FE48AAA6F0ADA1AA5DF91985, 
@@ -586,4 +599,7 @@ parameters = {  'q' : 0xBDB6F4FE3E8B1D9E0DA8C0D46F4C318CEFE4AFE3B6B8551F,
                 'n' : 0xBDB6F4FE3E8B1D9E0DA8C0D40FC962195DFAE76F56564677, 
                 'G' : Point(0x4AD5F7048DE709AD51236DE65E4D4B482C836DC6E4106640, 
                             0x02BB3A02D4AAADACAE24817A4CA3A1B014B5270432DB27D2)}
-'''
+
+pk = Point(1942035403005074971647781739509896695154855036214372663290, 
+        4238745327112580806713141963685250010536932775891874012416)
+print(public_key_verification(parameters, pk))
