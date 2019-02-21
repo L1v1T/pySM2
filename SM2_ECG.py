@@ -4,6 +4,8 @@ from SM2_Code import *
 import math
 from polynomial import *
 from Point import *
+import random
+import hashlib
 
 # 有限域加法单位元 #
 def field_ele_zero():
@@ -99,7 +101,7 @@ def field_ele_inverse_add(a):
             print("*** ERROR: a不是域中元素 *** function: field_ele_inverse_add ***")
             return -1
         else:
-            return(q - a)
+            return (q - a) % q
     # q 为 2 的幂
     elif is_Power_of_two(q):
         m = math.log2(q)
@@ -442,12 +444,39 @@ input: 有效的椭圆曲线系统参数集合
 output: 与输入参数相关的一个密钥对(d, P)
 '''
 def key_pair_generation(parameters):
-    pass
+    config.set_q(parameters['q'])
+    config.set_a(parameters['a'])
+    config.set_b(parameters['b'])
+    n = parameters['n']
+    point_g = parameters['G']
+    # q 为 2 的幂
+    if is_Power_of_two(parameters['q']):
+        config.set_fx(parameters['f(x)'])
+
+    d = random.randint(1, n - 2)
+    d = 121
+    p = ECG_k_point(d, point_g)
+    keypair = []
+    keypair.append(d)
+    keypair.append(p)
+    return keypair
+### test key_pair_generation ###
+'''
+parameters = {  'q' : 211, 
+                'f(x)' : polynomial_zero(), 
+                'a' : 0, 
+                'b' : 207, 
+                'n' : 211, 
+                'G' : Point(2, 2)}
+key = key_pair_generation(parameters)
+print(key[0])
+print(key[1])
+'''
 
 # 6.2 公钥的认证 #
 '''
 input: 有效的椭圆曲线系统参数集合以及一个相关的公钥
-output: 若通过验证则输出“有效：， 无效则
+output: 若通过验证则输出“有效",否则输出“无效”
 '''
 def public_key_verification(parameters, public_key):
     pass

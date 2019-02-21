@@ -25,12 +25,12 @@ def set_fx(a):
 
 def get_fx():
     return fx
-# test set_fx #
+### test set_fx ###
 #print(fx)
 #set_fx('0b10101111')
 #print(fx)
 
-# 椭圆曲线参数
+# 椭圆曲线参数 #
 a = 0
 b = 0
 
@@ -47,3 +47,10 @@ def set_b(ib):
 
 def get_b():
     return b
+
+n = 0
+def set_n(a):
+    global n
+    n = a
+def get_n():
+    return n
