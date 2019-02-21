@@ -164,7 +164,7 @@ def ele_to_bytes(a):
 	#print("--- 域元素到字节串的转换 ---")
 	S = []
 	q = config.get_q()
-	if (isPrime(q) and q%2 ==1):   # q为奇素数
+	if (isPrime_MR(q, 15) and q%2 ==1):   # q为奇素数
 		if (a>=0 and a<=q-1):
 			t = math.ceil(math.log(q,2))
 			l = math.ceil(t/8)
@@ -186,7 +186,7 @@ def ele_to_bytes(a):
 				a = a + '0'
 			for i in range(0, len(temp)-2):
 				a = a + temp[i+2]
-			print(a)
+			#print(a)
 			if len(a)-2 == m:
 				S = bits_to_bytes(a)
 			else:
@@ -211,7 +211,7 @@ output：Fq中的元素a
 '''
 def bytes_to_ele(q, S):
 	a = ''
-	if (isPrime(q) and q%2 ==1):   # q为奇素数
+	if (isPrime_MR(q, 15) and q%2 ==1):   # q为奇素数
 		a = 0
 		t = math.ceil(math.log(q,2))
 		l = math.ceil(t/8)
@@ -278,7 +278,7 @@ def ele_to_int(a):
 	#print("--- 域元素到字节串的转换 ---")
 	x = 0
 	q = config.get_q()
-	if (isPrime(q) and q%2 ==1):   # q为奇素数
+	if (isPrime_MR(q, 15) and q%2 ==1):   # q为奇素数
 		x = a
 	elif is_Power_of_two(q):    # q为2的幂
 		if type(a)==str and a[0:2] == '0b':
@@ -313,12 +313,12 @@ output：字节串S。
 def point_to_bytes(point):
 	x = point.x
 	y = point.y
-	print('x', x)
+	#print('x', x)
 	S = []
-	PC = []
+	PC = ''
 	# a. 将域元素x转换成长度为l的字节串X
 	X = ele_to_bytes(x)
-	print('字节串X', X)
+	#print('字节串X', X)
 	'''
 	##### b. 压缩表示形式 #####
 	# b.1 计算比特y1
@@ -328,9 +328,9 @@ def point_to_bytes(point):
 	#print('y1', y1)
 	# b.2 若y1=0，则令PC=02；若y1=1，则令PC=03
 	if y1 == '0':
-		PC = '02'
+		PC = 2
 	elif y1 == '1':
-		PC = '03'
+		PC = 3
 	else:
 		print('ERROR')
 	# b.3 字节串S=PC||X
@@ -343,7 +343,7 @@ def point_to_bytes(point):
 	# c.1 将域元素y转换成长度为l的字节串Y
 	Y = ele_to_bytes(y)
 	# c.2 令PC=04
-	PC = '04'
+	PC = 4
 	# c.3 字节串S=PC||X||Y
 	S.append(PC)
 	for m in X:
@@ -354,32 +354,27 @@ def point_to_bytes(point):
 	##### d. 混合表示形式 #####
 	# d.1 将域元素y转换成长度为l的字节串Y
 	Y = ele_to_bytes(y)
-	print('字节串Y', Y)
+	#print('字节串Y', Y)
 	# d.2 计算比特y1
-	print('1', Y)
 	y1_temp = bytes_to_bits(Y)#[math.ceil(math.log(q,2)/8)*8-1:math.ceil(math.log(q,2)/8)*8]
-	print('2', Y)
 	y1 = y1_temp[len(y1_temp)-1:len(y1_temp)]
 	# d.3 若y1=0，则令PC=06；若y1=1，则令PC=07
 	if y1 == '0':
-		PC = '06'
+		PC = 6
 	elif y1 == '1':
-		PC = '07'
+		PC = 7
 	else:
 		print('ERROR')
 	# d.4 字节串S=PC||X||Y
-	print('3', Y)
 	S.append(PC)
 	for m in X:
 		S.append(m)
-	print('4', Y)
 	for n in Y:
-		print(n)
 		S.append(n)
 	return S
 ### test point_to_bytes
 #config.set_q(1024)
-#point = Point('0b100000000', '0b100000000')
+#point = Point('0b1', '0b1')
 #print(point_to_bytes(point))
 
 
@@ -393,7 +388,7 @@ def bytes_to_point(a, b, S):
 	print('q',q)
 	l = math.ceil(math.log(q, 2)/8)
 	print('l', l)
-	PC = []
+	PC = ''
 	X = []
 	Y = []
 	# a. 
@@ -413,30 +408,33 @@ def bytes_to_point(a, b, S):
 
 	# b. 将X转换成与元素x
 	x = bytes_to_ele(q, X)
-	print(PC)
+	print('PC', PC)
 
-	print(x)
+	print('x', x)
 	##### c. 压缩表示形式 #####
 	y1 = ''
 	# c.1 and c.2
-	if PC == '02':
+	if PC == 2:
 		y1 = '0'
-	elif PC == '03':
+	elif PC == 3:
 		y1 = '1'
 	##### d. 未压缩表示形式 #####
-	elif PC == '04':
+	elif PC == 4:
 		y = bytes_to_ele(q, Y)
 	##### e. 混合表示形式 #####
 	# e.1 and e.2
-	elif PC == '06' or '07':
+	elif PC == 6 or 7:
 		y = bytes_to_ele(q, Y)
+		print('y', y)
 	else:
 		print('ERROR in bytes_to_point')
 	# f. 
 	result = 0
-	x = int(x,2)
-	y = int(y,2)
-	if (isPrime(q) and q%2 ==1):   # q为奇素数
+	if(type(x) != type(1)):
+		x = int(x,2)
+	if(type(y) != type(1)):
+		y = int(y,2)
+	if (isPrime_MR(q, 15) and q%2 ==1):   # q为奇素数
 		if (y**2)%q != (x**3 + a*x + b)%q:
 			return -1
 	elif is_Power_of_two(q):
@@ -446,4 +444,4 @@ def bytes_to_point(a, b, S):
 	point = Point(x,y)
 	return point
 #config.set_q(1024)
-#print(bytes_to_point( 1, 1,['06', 1, 0, 1, 0]))
+#print(bytes_to_point( 1, 0,[7, 0, 1, 0, 1]))
