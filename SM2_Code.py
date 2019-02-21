@@ -240,7 +240,7 @@ def bytes_to_ele(q, S):
 ### test bytes_to_ele(q, S) ###
 #print(bytes_to_ele(257, '20'))
 #print(bytes_to_ele(256, [232]))
-print(bytes_to_ele(1024, [1, 86]))
+#print(bytes_to_ele(1024, [1, 86]))
 
 # 4.2.7 域元素到整数
 '''

@@ -1,6 +1,13 @@
 from SM2_Code import *
 import math
 
+# 多项式加法单位元 #
+def polynomial_zero():
+    return '0b0'
+# 多项式乘法单位元 #
+def polynomial_one():
+    return '0b1'
+
 # 多项式乘法 #
 '''
 input: 两个多项式（比特串）
