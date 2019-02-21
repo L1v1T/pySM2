@@ -32,7 +32,7 @@ def polynomial_times(a, b):
     while a_int != 0:
         if a_int%2 == 1:
             c = c ^ (b_int << i)
-        a_int = int(a_int / 2)
+        a_int = a_int // 2
         i += 1
     return bytes_to_bits(int_to_bytes(c, m_bytes))
 ### test polynomial_times ###
