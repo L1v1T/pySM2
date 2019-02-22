@@ -137,3 +137,6 @@ def default_config():
                     'Gy' : 0x02BB3A02D4AAADACAE24817A4CA3A1B014B5270432DB27D2
                     }
     set_parameters(parameters)
+
+def get_v():
+    return 256
