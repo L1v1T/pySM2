@@ -1,6 +1,7 @@
 from SM2_Encryption import *
 import config
 from Integer import *
+from SM2_Code import *
 
 def Enc_Interface(M, PB):
 	
@@ -8,9 +9,13 @@ def Enc_Interface(M, PB):
 	M = M_to_bits(M)
 	PB = PB
 	C = Encryption(M, PB)
+	C = bits_to_M(C)
 	return C
 
 def Dec_Interface(C, dB):
+	C = str_to_bytes(C)
+	C = bytes_to_bits(C)
+	C = C[2:len(C)]
 	M_ = Decryption(C, dB)
 	return bits_to_M(M_)
 
@@ -25,7 +30,7 @@ parameters = {  'q' : 211,
                 'Gy' : 2
                 }
 config.set_parameters(parameters)
-M = ['aa', 's']
+M = ['a', 's']
 PB = Point(115, 48)
 dB = 121
 print('M ', M)

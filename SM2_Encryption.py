@@ -109,9 +109,9 @@ def Encryption(M, PB):
 		# A2.1：计算椭圆曲线点C1=[k]G=(x1,y1)
 		# A2.2：按本文本第1部分4.2.8和4.2.4给出的细节，将C1的数据类型转换为比特串
 		C1 = ECG_k_point(k, Point(Gx, Gy))
+		#print('enc: C1_point', C1)
 		C1 = point_to_bytes(C1)
 		C1 = bytes_to_bits(C1)
-
 		# A3：计算椭圆曲线点S=[h]PB，若S是无穷远点，则报错并退出
 		#S = ECG_k_point(h, G)
 		#if():
@@ -119,6 +119,7 @@ def Encryption(M, PB):
 
 		# A4.1：计算椭圆曲线点[k]PB=(x2,y2)
 		# A4.2：按本文本第1部分4.2.5和4.2.4给出的细节，将坐标x2、y2的数据类型转换为比特串
+		#print("enc: PB = ", PB)
 		x2 = ECG_k_point(k, PB).x
 		y2 = ECG_k_point(k, PB).y
 		x2 = bytes_to_bits(ele_to_bytes(x2))
@@ -137,6 +138,13 @@ def Encryption(M, PB):
 	C1 = remove_0b_at_beginning(C1)
 	C2 = remove_0b_at_beginning(C2)
 	C3 = remove_0b_at_beginning(C3)
+	#print('enc: len_C1', len(C1))
+	#print('enc: len_C2', len(C2))
+	#print('enc: len_C3', len(C3))
+
+	#print('enc: C1', C1)
+	#print('enc: C2', C2)
+	#print('enc: C3', C3)
 	C = C1 + C2 + C3
 	return C
 
@@ -172,18 +180,26 @@ C = Encryption(M)
 def Decryption(C, dB):
 	a = config.get_a()
 	b = config.get_b()
+	q = config.get_q()
+	l = math.ceil(math.log(q, 2)/8)
 	# B1.1：从C中取出比特串C1
 	# B1.2：按本文本第1部分4.2.3和4.2.9给出的细节，将C1的数据类型转换为椭圆曲线上的点
 	# B1.3：验证C1是否满足椭圆曲线方程，若不满足则报错并退出
-	C1 = C[0:19]
-	C2 = C[19:len(C)-256]
+	C1 = C[0:(1+l*2)*8]
+	C2 = C[(1+l*2)*8:len(C)-256]
 	C3 = C[len(C)-256:len(C)]
 	C1 = '0b'+C1
+	#print('dec: length of C1', len(bits_to_bytes(C1)))
+	#print('dec: C1', bits_to_bytes(C1))
+	#print('dec: C2', C2)
+	#print('dec: C3', C3)
+	#print('dec: l value', l)
 	C1 = bytes_to_point(a, b, bits_to_bytes(C1))
 	# B2：计算椭圆曲线点S=[h]C1，若S是无穷远点，则报错并退出
 
 	# B3.1：计算[dB]C1=(x2,y2)
 	# B3.2：按本文本第1部分4.2.5和4.2.4给出的细节，将坐标x2、y2的数据类型转换为比特串
+
 	x2 = ECG_k_point(dB, C1).x
 	y2 = ECG_k_point(dB, C1).y
 	x2 = bytes_to_bits(ele_to_bytes(x2))
