@@ -3,11 +3,11 @@ from SM2_Encryption import *
 def Enc_Interface(M, PB):
 	M = M_to_bits(M)
 	PB = PB
-	Encryption(M)
+	C = Encryption(M)
 	return C
 
 def Dec_Interface(C, dB):
-	Decryption(C)
+	M_ = Decryption(C)
 	return M_
 
 ### test Enc_Interface() and Dec_Interface() ###
