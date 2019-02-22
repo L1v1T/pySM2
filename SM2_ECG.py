@@ -63,7 +63,7 @@ def field_ele_one():
         return 1
     # q 为 2 的幂
     elif config.is_q_power_of_two():
-        #m = int(math.log2(q))
+        m = int(math.log2(q))
         one = '0b'
         for i in range(0, m - 1):
             one += '0'
