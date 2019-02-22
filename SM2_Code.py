@@ -307,20 +307,12 @@ output：字节串S。
 			（l=lb(q)/8(取上整)）
 '''
 def point_to_bytes(point):
-	q = config.get_q()
-	l = math.ceil(math.log(q, 2)/8)
 	x = point.x
 	y = point.y
 	S = []
 	PC = ''
 	# a. 将域元素x转换成长度为l的字节串X
 	X = ele_to_bytes(x)
-	temp = X
-	X = []
-	for i in range(0, l-len(X)):
-		X.append(0)
-	for i in range(0, len(X)):
-		X.append(X[i])
 	'''
 	##### b. 压缩表示形式 #####
 	# b.1 计算比特y1
@@ -355,12 +347,6 @@ def point_to_bytes(point):
 	##### d. 混合表示形式 #####
 	# d.1 将域元素y转换成长度为l的字节串Y
 	Y = ele_to_bytes(y)
-	temp = Y
-	Y = []
-	for i in range(0, l-len(Y)):
-		Y.append(0)
-	for i in range(0, len(Y)):
-		Y.append(Y[i])
 	# d.2 计算比特y1
 	y1_temp = bytes_to_bits(Y)#[math.ceil(math.log(q,2)/8)*8-1:math.ceil(math.log(q,2)/8)*8]
 	y1 = y1_temp[len(y1_temp)-1:len(y1_temp)]
@@ -370,7 +356,7 @@ def point_to_bytes(point):
 	elif y1 == '1':
 		PC = 7
 	else:
-		print('*** ERROR: PC值不对 function: point_to_bytes ***')
+		print('ERROR')
 	# d.4 字节串S=PC||X||Y
 	S.append(PC)
 	for m in X:
@@ -407,7 +393,7 @@ def bytes_to_point(a, b, S):
 		for i in range(1,l):
 			X.append(S[i])
 	else:
-		print('*** ERROR: wrong size  function: bytes_to_point ***')
+		print('ERROR')
 
 	# b. 将X转换成与元素x
 	x = bytes_to_ele(q, X)
