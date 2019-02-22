@@ -2,6 +2,7 @@ import math
 from Integer import *
 import config
 from Point import *
+from binary import *
 # 4.2.1 整数到字节串的转换
 '''
 input：非负整数x，以及字节串的目标长度k  
@@ -99,11 +100,8 @@ output：长度为m的比特串s，其中m=8k
 '''
 def bytes_to_bits(M):
 	#print("--- 字节串到比特串的转换 ---")
-	#print('M',M)
 	k = len(M)
-	#print('k', k)
 	m = 8*k
-	#print('m', m)
 	temp = ''
 	s = 0
 	M.reverse()
@@ -111,10 +109,8 @@ def bytes_to_bits(M):
 	for i in M:
 		s = s + i*(256**j)
 		j = j + 1
-		#print(s)
 	s = bin(s)
 	M.reverse()
-	#print(s)
 	return s
 ### test bytes_to_bits ###
 #print(bytes_to_bits([2,2])) 
@@ -173,20 +169,17 @@ def ele_to_bytes(a):
 			print("*** ERROR: 域元素须在区间[0, q-1]上 *** function：ele_to_bytes(a) ***")
 			return -1;
 	elif is_Power_of_two(q):    # q为2的幂
-		#print(a)
-		#print(type(a))
 		if type(a)==str and a[0:2] == '0b':
 			m = math.ceil(math.log(q, 2))
-			#print(m)
-			temp = a
-			a = ''
-			for i in range(0, 2):
-				a = a + temp[i]
-			for i in range(0, m-len(temp)+2):
-				a = a + '0'
-			for i in range(0, len(temp)-2):
-				a = a + temp[i+2]
-			#print(a)
+			a = padding_0_to_length(a, m)
+			'''temp = a
+												a = ''
+												for i in range(0, 2):
+													a = a + temp[i]
+												for i in range(0, m-len(temp)+2):
+													a = a + '0'
+												for i in range(0, len(temp)-2):
+													a = a + temp[i+2]'''
 			if len(a)-2 == m:
 				S = bits_to_bytes(a)
 			else:
@@ -221,15 +214,16 @@ def bytes_to_ele(q, S):
 			return -1;
 	elif is_Power_of_two(q):    # q为2的幂
 		m = math.ceil(math.log(q, 2))
-		#print('byte2bits m', m)
-		temp = bytes_to_bits(S)
-		#print(temp)
-		for i in range(0, 2):
-			a = a + temp[i]
-		for i in range(0, m-len(temp)+2):
-			a = a + '0'
-		for i in range(0, len(temp)-2):
-			a = a + temp[i+2]
+		a = padding_0_to_length(a, m)
+		'''a = bytes_to_bits(S)
+								temp = a
+								a = ''
+								for i in range(0, 2):
+									a = a + temp[i]
+								for i in range(0, m-len(temp)+2):
+									a = a + '0'
+								for i in range(0, len(temp)-2):
+									a = a + temp[i+2]'''
 		if not len(a)-2 == m:
 			print("*** ERROR: 域元素必须为长度为m的比特串 *** function：bytes_to_ele(q, S)")
 			return -1;
@@ -284,7 +278,8 @@ def ele_to_int(a):
 		if type(a)==str and a[0:2] == '0b':
 			m = math.log(q, 2)
 			if len(a)-2 == m:
-				a = a.replace('0b', '')
+				#a = a.replace('0b', '')
+				a = remove_0b_at_beginning(a)
 				for i in a:
 					x = x * 2 + int(i)
 			else:
@@ -313,19 +308,16 @@ output：字节串S。
 def point_to_bytes(point):
 	x = point.x
 	y = point.y
-	#print('x', x)
 	S = []
 	PC = ''
 	# a. 将域元素x转换成长度为l的字节串X
 	X = ele_to_bytes(x)
-	#print('字节串X', X)
 	'''
 	##### b. 压缩表示形式 #####
 	# b.1 计算比特y1
 	temp = ele_to_bytes(y)
 	y1_temp = bytes_to_bits(temp)#[math.ceil(math.log(q,2)/8)*8-1:math.ceil(math.log(q,2)/8)*8]
 	y1 = y1_temp[len(y1_temp)-1:len(y1_temp)]
-	#print('y1', y1)
 	# b.2 若y1=0，则令PC=02；若y1=1，则令PC=03
 	if y1 == '0':
 		PC = 2
@@ -354,7 +346,6 @@ def point_to_bytes(point):
 	##### d. 混合表示形式 #####
 	# d.1 将域元素y转换成长度为l的字节串Y
 	Y = ele_to_bytes(y)
-	#print('字节串Y', Y)
 	# d.2 计算比特y1
 	y1_temp = bytes_to_bits(Y)#[math.ceil(math.log(q,2)/8)*8-1:math.ceil(math.log(q,2)/8)*8]
 	y1 = y1_temp[len(y1_temp)-1:len(y1_temp)]
@@ -385,9 +376,7 @@ output：椭圆曲线上的点P=(xp,yp)，且P!=Q
 '''
 def bytes_to_point(a, b, S):
 	q = config.get_q()
-	print('q',q)
 	l = math.ceil(math.log(q, 2)/8)
-	print('l', l)
 	PC = ''
 	X = []
 	Y = []
@@ -404,13 +393,9 @@ def bytes_to_point(a, b, S):
 			X.append(S[i])
 	else:
 		print('ERROR')
-	print(X)
 
 	# b. 将X转换成与元素x
 	x = bytes_to_ele(q, X)
-	print('PC', PC)
-
-	print('x', x)
 	##### c. 压缩表示形式 #####
 	y1 = ''
 	# c.1 and c.2
@@ -425,7 +410,6 @@ def bytes_to_point(a, b, S):
 	# e.1 and e.2
 	elif PC == 6 or 7:
 		y = bytes_to_ele(q, Y)
-		print('y', y)
 	else:
 		print('ERROR in bytes_to_point')
 	# f. 

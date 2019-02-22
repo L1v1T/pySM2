@@ -5,30 +5,18 @@ from SM2_Code import *
 from SM2_ECG import *
 from Point import *
 from config import *
-
-# 去掉比特串前面的0
-def remove_0b_at_beginning(a):
-	if(a[0:2] == '0b'):
-		a = a[2:len(a)]
-	return a
+from binary import *
 
 # hash函数
 def hash_function(m):
 	sha256 = hashlib.sha256()
 	sha256.update(m.encode("utf8"))
 	sha256 = bin(int(sha256.hexdigest(), 16))
-	temp = sha256
-	sha256 = ''
-	for i in range(0, 2):
-		sha256 = sha256 + temp[i]
-	for i in range(0, 32*8-len(temp)+2):
-		sha256 = sha256 + '0'
-	for i in range(0, len(temp)-2):
-		sha256 = sha256 + temp[i+2]
+	sha256 = padding_0_to_length(sha256, 32*8)
 	return sha256
 ### test hash_function ###
-#print('1--',hash_function('asd'))
-#print('2--',hash_function('asd'))
+print('1--',hash_function('akjkSsd'))
+print('2--',hash_function('asd'))
 #print('3--',hash_function('100000000101100001101100000000'))
 
 # 密钥派生函数
@@ -92,36 +80,22 @@ def Encryption(M):
 		# A4.2：按本文本第1部分4.2.5和4.2.4给出的细节，将坐标x2、y2的数据类型转换为比特串
 		x2 = ECG_k_point(k, PB).x
 		y2 = ECG_k_point(k, PB).y
-		print(type(x2))
 		x2 = bytes_to_bits(ele_to_bytes(x2))
-		y2 = bytes_to_bits(ele_to_bytes(y2))
-		if (x2[0:2] == '0b'):
-			x2 = x2[2:len(x2)]
-		if (y2[0:2] == '0b'):
-			y2 = y2[2:len(y2)]
+		y2 = bytes_to_bits(ele_to_bytes(y2))	
+		x2 = remove_0b_at_beginning(x2)
+		y2 = remove_0b_at_beginning(y2)
 		# A5：计算t=KDF(x2 ∥y2, klen)，若t为全0比特串，则返回A1
 		t = KDF(x2+y2,klen)
 	# A6：计算C2 = M ⊕t
-	if (M[0:2] == '0b'):
-		M = M[2:len(M)]
+	M = remove_0b_at_beginning(M)
 	C2 = bin( int(M, 2)^int(t, 2) )
-	temp = C2
-	C2 = ''
-	for i in range(0, 2):
-		C2 = C2 + temp[i]
-	for i in range(0, klen-len(temp)+2):
-		C2 = C2 + '0'
-	for i in range(0, len(temp)-2):
-		C2 = C2 + temp[i+2]
+	C2 = padding_0_to_length(C2, klen)
 	# A7：计算C3 = Hash(x2 ∥ M ∥ y2)
 	C3 = hash_function(x2+M+y2)
 	# A8：输出密文C = C1 ∥ C2 ∥ C3
-	if (C1[0:2] == '0b'):
-		C1 = C1[2:len(C1)]
-	if (C2[0:2] == '0b'):
-		C2 = C2[2:len(C2)]
-	if (C3[0:2] == '0b'):
-		C3 = C3[2:len(C3)]
+	C1 = remove_0b_at_beginning(C1)
+	C2 = remove_0b_at_beginning(C2)
+	C3 = remove_0b_at_beginning(C3)
 	C = C1 + C2 + C3
 	return C
 ### test Encryption ###
@@ -146,7 +120,7 @@ n = 10
 G = Point(2, 2)
 #PB = Point(115, 48)
 v = 256
-M = '101111111111111111111111111111111111111111111111111111111111111'
+M = '101111111111111111111111111110000001111111111111111111111111111111111'
 C = Encryption(M)
 
 
@@ -169,10 +143,8 @@ def Decryption(C):
 	y2 = bytes_to_bits(ele_to_bytes(y2))
 	# B4：计算t=KDF(x2 ∥y2, klen)，若t为全0比特串，则报错并退出
 	klen = len(C2)
-	if (x2[0:2] == '0b'):
-		x2 = x2[2:len(x2)]
-	if (y2[0:2] == '0b'):
-		y2 = y2[2:len(y2)]
+	x2 = remove_0b_at_beginning(x2)
+	y2 = remove_0b_at_beginning(y2)
 	t = KDF(x2+y2, klen)
 	if(is_zero_bits(t)):
 		print("*** ERROR: t为全0比特串 *** function: Decryption ***")
@@ -180,12 +152,9 @@ def Decryption(C):
 	# B5：从C中取出比特串C2，计算M′ = C2 ⊕t
 	M_ = bin(int(C2, 2) ^ int(t, 2))
 	# B6：计算u = Hash(x2 ∥ M′ ∥ y2)，从C中取出比特串C3，若u ̸= C3，则报错并退出
-	if (x2[0:2] == '0b'):
-		x2 = x2[2:len(x2)]
-	if (M_[0:2] == '0b'):
-		M_ = M_[2:len(M_)]
-	if (y2[0:2] == '0b'):
-		y2 = y2[2:len(y2)]
+	x2 = remove_0b_at_beginning(x2)
+	M_ = remove_0b_at_beginning(M_)
+	y2 = remove_0b_at_beginning(y2)
 	u = hash_function(x2+M_+y2)
 	if(remove_0b_at_beginning(u) != remove_0b_at_beginning(C3)):
 		print("*** ERROR: u不等于C3 *** function: Decryption ***")
