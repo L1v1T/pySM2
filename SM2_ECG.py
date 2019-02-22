@@ -297,12 +297,12 @@ def field_ele_a_devide_b(a, b):
 
 # 椭圆曲线无穷远点 #
 def ECG_ele_zero():
-    return Point(0, 0)
+    return Point(field_ele_zero(), field_ele_zero())
 
 # 椭圆曲线元素判断 #
 # 元素为零 #
 def ECG_ele_is_zero(p):
-    if p.x == 0 and p.y == 0:
+    if p.x == field_ele_zero() and p.y == field_ele_zero():
         return True
     else:
         return False
@@ -311,12 +311,12 @@ def ECG_is_inverse_ele(p1, p2):
     q = config.get_q()
     # q 为素数
     if config.is_q_prime():
-        if p1.x == p2.x and p1.y == -p2.y:
+        if p1.x == p2.x and p1.y == field_ele_inverse_add(p2.y):
             return True
         else:
             return False
     elif config.is_q_power_of_two():
-        if p1.x == p2.x and p2.y == p1.x + p1.y:
+        if p1.x == p2.x and p2.y == field_ele_add(p1.x, p1.y):
             return True
         else:
             return False
@@ -336,7 +336,6 @@ input: 椭圆曲线群中点 a 和 b
 output: 椭圆曲线群中点(a+b)
 '''
 def ECG_ele_add(p1, p2):
-    q = config.get_q()
     # Fp 上的椭圆曲线群
     if config.is_q_prime():
         if ECG_ele_is_zero(p1):
@@ -344,7 +343,7 @@ def ECG_ele_add(p1, p2):
         elif ECG_ele_is_zero(p2):
             return p1
         elif ECG_is_inverse_ele(p1, p2):
-            return Point(0, 0)
+            return ECG_ele_zero()
         elif ECG_ele_equal(p1, p2):
             #lam = (3 * (p1.x**2) + config.get_a()) / (2 * p1.y)
             t1 = field_ele_add(field_ele_times(3, field_ele_g_pow_a(p1.x, 2)), config.get_a())
@@ -371,7 +370,7 @@ def ECG_ele_add(p1, p2):
         elif ECG_ele_is_zero(p2):
             return p1
         elif ECG_is_inverse_ele(p1, p2):
-            return Point(0, 0)
+            return ECG_ele_zero()
         elif ECG_ele_equal(p1, p2):
             #lam = p1.x + (p1.y / p1.x)
             lam = field_ele_add(p1.x, field_ele_a_devide_b(p1.y, p1.x))
@@ -401,7 +400,6 @@ input: 椭圆曲线点 p
 output: 点(P+P)
 '''
 def ECG_double_point(p):
-    q = config.get_q()
     # Fp 上的椭圆曲线群
     if config.is_q_prime():
         if ECG_ele_is_zero(p):
@@ -529,7 +527,6 @@ def public_key_verification(parameters, public_key):
     config.set_a(parameters['a'])
     config.set_b(parameters['b'])
     n = parameters['n']
-    point_g = parameters['G']
     # q 为 2 的幂
     if config.is_q_power_of_two():
         config.set_fx(parameters['f(x)'])
