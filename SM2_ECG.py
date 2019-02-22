@@ -479,14 +479,19 @@ input: 有效的椭圆曲线系统参数集合
 output: 与输入参数相关的一个密钥对(d, P)
 '''
 def key_pair_generation(parameters):
+    '''
     config.set_q(parameters['q'])
     config.set_a(parameters['a'])
     config.set_b(parameters['b'])
     n = parameters['n']
-    point_g = parameters['G']
+    point_g = Point(parameters['Gx'], parameters['Gy'])
     # q 为 2 的幂
-    if is_Power_of_two(parameters['q']):
+    if config.is_q_power_of_two():
         config.set_fx(parameters['f(x)'])
+    '''
+    config.set_parameters(parameters)
+    point_g = Point(config.get_Gx(), config.get_Gy())
+    n = config.get_n()
 
     d = random.randint(1, n - 2)
     p = ECG_k_point(d, point_g)
@@ -501,16 +506,19 @@ parameters = {  'q' : 211,
                 'a' : 0, 
                 'b' : 207, 
                 'n' : 211, 
-                'G' : Point(2, 2)}
+                'Gx' : 2, 
+                'Gy' : 2
+                }
 '''
 '''
 parameters = {  'q' : 0xBDB6F4FE3E8B1D9E0DA8C0D46F4C318CEFE4AFE3B6B8551F, 
-                'f(x)' : polynomial_zero(), 
+                'f(x)' : 'NULL', 
                 'a' : 0xBB8E5E8FBC115E139FE6A814FE48AAA6F0ADA1AA5DF91985, 
                 'b' : 0x1854BEBDC31B21B7AEFC80AB0ECD10D5B1B3308E6DBF11C1, 
                 'n' : 0xBDB6F4FE3E8B1D9E0DA8C0D40FC962195DFAE76F56564677, 
-                'G' : Point(0x4AD5F7048DE709AD51236DE65E4D4B482C836DC6E4106640, 
-                            0x02BB3A02D4AAADACAE24817A4CA3A1B014B5270432DB27D2)}
+                'Gx' : 0x4AD5F7048DE709AD51236DE65E4D4B482C836DC6E4106640, 
+                'Gy' : 0x02BB3A02D4AAADACAE24817A4CA3A1B014B5270432DB27D2
+                }
 
 key = key_pair_generation(parameters)
 print(key[0])
@@ -523,6 +531,7 @@ input: 有效的椭圆曲线系统参数集合以及一个相关的公钥
 output: 若通过验证则输出“有效",否则输出“无效”
 '''
 def public_key_verification(parameters, public_key):
+    '''
     config.set_q(parameters['q'])
     config.set_a(parameters['a'])
     config.set_b(parameters['b'])
@@ -530,6 +539,9 @@ def public_key_verification(parameters, public_key):
     # q 为 2 的幂
     if config.is_q_power_of_two():
         config.set_fx(parameters['f(x)'])
+    '''
+    config.set_parameters(parameters)
+    n = config.get_n()
     q = config.get_q()
     # q 为奇素数
     if config.is_q_prime() and q > 3:
@@ -589,12 +601,13 @@ def public_key_verification(parameters, public_key):
 ### test public_key_verification ###
 '''
 parameters = {  'q' : 0xBDB6F4FE3E8B1D9E0DA8C0D46F4C318CEFE4AFE3B6B8551F, 
-                'f(x)' : polynomial_zero(), 
+                'f(x)' : 'NULL', 
                 'a' : 0xBB8E5E8FBC115E139FE6A814FE48AAA6F0ADA1AA5DF91985, 
                 'b' : 0x1854BEBDC31B21B7AEFC80AB0ECD10D5B1B3308E6DBF11C1, 
                 'n' : 0xBDB6F4FE3E8B1D9E0DA8C0D40FC962195DFAE76F56564677, 
-                'G' : Point(0x4AD5F7048DE709AD51236DE65E4D4B482C836DC6E4106640, 
-                            0x02BB3A02D4AAADACAE24817A4CA3A1B014B5270432DB27D2)}
+                'Gx' : 0x4AD5F7048DE709AD51236DE65E4D4B482C836DC6E4106640, 
+                'Gy' : 0x02BB3A02D4AAADACAE24817A4CA3A1B014B5270432DB27D2
+                }
 
 pk = Point(1942035403005074971647781739509896695154855036214372663290, 
         4238745327112580806713141963685250010536932775891874012416)

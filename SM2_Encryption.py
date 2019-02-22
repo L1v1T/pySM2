@@ -32,7 +32,7 @@ def M_to_bits(input):
 				print('*** ERROR: 字节串中类型不为str或者int *** function：M_to_bits(input) ***')
 	return M
 ### test M_to_bits ###
-print(M_to_bits(['aa', 's']))
+#print(M_to_bits(['aa', 's']))
 
 # hash函数
 def hash_function(m):
@@ -127,12 +127,15 @@ def Encryption(M):
 	return C
 ### test Encryption ###
 # 密钥对生成
+'''
 parameters = {  'q' : 211, 
                 'f(x)' : polynomial_zero(), 
                 'a' : 0, 
                 'b' : 207, 
                 'n' : 211, 
-                'G' : Point(2, 2)}
+                'Gx' : 2, 
+				'Gy' : 2
+			}
 key = key_pair_generation(parameters)
 dB = key[0]
 PB = key[1]
@@ -149,7 +152,7 @@ G = Point(2, 2)
 v = 256
 M = '101001010110001010000000000000000000001010101010101010'
 C = Encryption(M)
-
+'''
 
 def Decryption(C):
 	# B1.1：从C中取出比特串C1
