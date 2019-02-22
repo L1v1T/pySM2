@@ -535,35 +535,35 @@ def public_key_verification(parameters, public_key):
     if config.is_q_prime() and q > 3:
         if ECG_ele_is_zero(public_key):
             print("*** ERROR: 公钥为无穷远点 *** function: public_key_verification")
-            print("无效")
+            #print("无效")
             return False
         if not (in_field(public_key.x) and in_field(public_key.y)):
             print("*** ERROR: 公钥坐标不是素域中元素 *** function: public_key_verification")
-            print("无效")
+            #print("无效")
             return False
         t1 = field_ele_g_pow_a(public_key.y, 2)
         t2 = field_ele_add(field_ele_add(field_ele_g_pow_a(public_key.x, 3), 
                             field_ele_times(config.get_a(), public_key.x)), config.get_b())
         if t1 != t2:
             print("*** ERROR: 公钥坐标不符合椭圆曲线方程 *** function: public_key_verification")
-            print("无效")
+            #print("无效")
             return False
         if not(ECG_ele_is_zero(ECG_k_point(n, public_key))):
             print("*** ERROR: n 不是公钥的阶 *** function: public_key_verification")
-            print("无效")
+            #print("无效")
             return False
-        print("有效")
+        #print("有效")
         return True
     # q 为 2 的幂
     elif config.is_q_power_of_two():
         if ECG_ele_is_zero(public_key):
             print("*** ERROR: 公钥为无穷远点 *** function: public_key_verification")
-            print("无效")
+            #print("无效")
             return False
         #m = math.log2(q)
         if not (in_field(public_key.x) and in_field(public_key.y)):
             print("*** ERROR: 公钥坐标不是素域中元素 *** function: public_key_verification")
-            print("无效")
+            #print("无效")
             return False
         t1 = field_ele_add(field_ele_g_pow_a(public_key.y, 2), 
                             field_ele_times(public_key.x, public_key.y))
@@ -574,20 +574,20 @@ def public_key_verification(parameters, public_key):
                             config.get_b())
         if t1 != t2:
             print("*** ERROR: 公钥坐标不符合椭圆曲线方程 *** function: public_key_verification")
-            print("无效")
+            #print("无效")
             return False
         if not(ECG_ele_is_zero(ECG_k_point(n, public_key))):
             print("*** ERROR: n 不是公钥的阶 *** function: public_key_verification")
-            print("无效")
+            #print("无效")
             return False
-        print("有效")
+        #print("有效")
         return True
     else:
         print("*** ERROR: q 不是奇素数或者 2 的幂 *** function: public_key_verification")
-        print("无效")
+        #print("无效")
         return False
 ### test public_key_verification ###
-
+'''
 parameters = {  'q' : 0xBDB6F4FE3E8B1D9E0DA8C0D46F4C318CEFE4AFE3B6B8551F, 
                 'f(x)' : polynomial_zero(), 
                 'a' : 0xBB8E5E8FBC115E139FE6A814FE48AAA6F0ADA1AA5DF91985, 
@@ -599,3 +599,4 @@ parameters = {  'q' : 0xBDB6F4FE3E8B1D9E0DA8C0D46F4C318CEFE4AFE3B6B8551F,
 pk = Point(1942035403005074971647781739509896695154855036214372663290, 
         4238745327112580806713141963685250010536932775891874012416)
 print(public_key_verification(parameters, pk))
+'''
