@@ -58,14 +58,14 @@ def SM2_encrypt_file(in_file, public_key_file, out_file = ''):
     m = fo.read(fl)
     fo.close()
     # 加密内容
-    c = Enc_Interface(m, pk)
+    c = Enc_Interface(str(m, encoding = 'utf-8'), pk)
     # 写入输出文件
     if out_file == '':
         out_file = in_file + '.sm2'
     else:
         out_file += '.sm2'
     fo = open(out_file, "wb")
-    fo.write(c)
+    fo.write(bytes(c, encoding = 'utf-8'))
     fo.close()
 
 # 解密文件 #
@@ -74,7 +74,7 @@ def SM2_decrypt_file(in_file, private_key_file, out_file = ''):
     sk = SM2_read_private_key(private_key_file)
     # 读文件内容
     sl = len(in_file)
-    if in_file[sl-3 : sl] != '.sm2':
+    if in_file[sl-4 : sl] != '.sm2':
         print("错误：不正确的文件后缀名（应为'.sm2'）")
         return False
     fo = open(in_file, "ab+")
@@ -83,14 +83,21 @@ def SM2_decrypt_file(in_file, private_key_file, out_file = ''):
     c = fo.read(fl)
     fo.close()
     # 解密内容
-    m = Dec_Interface(c, sk)
+    m = Dec_Interface(str(c, encoding = 'utf-8'), sk)
     # 写入输出文件
     if out_file == '':
-        out_file = in_file[0 : sl - 3]
+        out_file = in_file[0 : sl - 4]
     fo = open(out_file, "wb")
-    fo.write(m)
+    fo.write(bytes(m, encoding = 'utf-8'))
     fo.close()
     return True
+### test SM2_encrypt_file and SM2_decrypt_file ###
+'''
+SM2_init()
+SM2_key_pair_gen()
+SM2_encrypt_file("platText", "public_key", "yes")
+SM2_decrypt_file("yes.sm2", "public_key")
+'''
 
 # 加密字符串 #
 def SM2_encrypt_str(data, public_key_file):
@@ -103,10 +110,11 @@ def SM2_decrypt_str(data, private_key_file):
     sk = SM2_read_private_key(private_key_file)
     return Dec_Interface(data, sk)
 
-### test encrypt_str ###
+### test SM2_encrypt_str and SM2_decrypt_str ###
+
 SM2_init()
 SM2_key_pair_gen()
-c = SM2_encrypt_str("hello world", "public_key")
+c = SM2_encrypt_str("hello world!", "public_key")
 print("密文：" + c)
 m = SM2_decrypt_str(c, "private_key")
 print("解密结果： " + m)
