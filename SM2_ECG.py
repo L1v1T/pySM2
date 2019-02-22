@@ -12,14 +12,14 @@ import time
 def in_field(a):
     q = config.get_q()
     # q 为奇素数
-    if config.q_is_prime() and q > 2:
+    if config.is_q_prime() and q > 2:
         if not (a >= 0 and a<= q-1):
             print("*** ERROR: a不是有限域中元素 *** function: in_field ***")
             return False
         else:
             return True
     # q 为 2 的幂
-    elif config.q_is_power_of_two():
+    elif config.is_q_power_of_two():
         m = math.log2(q)
         if (len(a)-2) > m:
             print("*** ERROR: a 不是有限域元素 *** function: in_field ***")
@@ -39,10 +39,10 @@ def in_field(a):
 def field_ele_zero():
     q = config.get_q()
     # q 为奇素数
-    if config.q_is_prime() and q > 2:
+    if config.is_q_prime() and q > 2:
         return 0
     # q 为 2 的幂
-    elif config.q_is_power_of_two():
+    elif config.is_q_power_of_two():
         m = int(math.log2(q))
         zero = '0b'
         for i in range(0, m):
@@ -59,10 +59,10 @@ def field_ele_zero():
 def field_ele_one():
     q = config.get_q()
     # q 为奇素数
-    if config.q_is_prime() and q > 2:
+    if config.is_q_prime() and q > 2:
         return 1
     # q 为 2 的幂
-    elif config.q_is_power_of_two():
+    elif config.is_q_power_of_two():
         #m = int(math.log2(q))
         one = '0b'
         for i in range(0, m - 1):
@@ -87,7 +87,7 @@ def field_ele_add(a, b):
 
     q = config.get_q()
     # q 为奇素数
-    if config.q_is_prime() and q > 2:
+    if config.is_q_prime() and q > 2:
         if not in_field(a):
             print("*** ERROR: a不是素域中元素 *** function: field_ele_add ***")
             return -1
@@ -97,7 +97,7 @@ def field_ele_add(a, b):
         else:
             return((a + b) % q)
     # q 为 2 的幂
-    elif config.q_is_power_of_two():
+    elif config.is_q_power_of_two():
         #m = math.log2(q)
         if not (in_field(a) and in_field(b)):
             print("*** ERROR: 参数不是二元扩域元素 *** function: field_ele_add ***")
@@ -124,14 +124,14 @@ output: a 的逆元素
 def field_ele_inverse_add(a):
     q = config.get_q()
     # q 为奇素数
-    if config.q_is_prime() and q > 2:
+    if config.is_q_prime() and q > 2:
         if not in_field(a):
             print("*** ERROR: a不是域中元素 *** function: field_ele_inverse_add ***")
             return -1
         else:
             return (q - a) % q
     # q 为 2 的幂
-    elif config.q_is_power_of_two():
+    elif config.is_q_power_of_two():
         #m = math.log2(q)
         if not in_field(a):
             print("*** ERROR: 参数不是二元扩域元素 *** function: field_ele_inverse_add ***")
@@ -166,7 +166,7 @@ def field_ele_times(a, b):
 
     q = config.get_q()
     # q 为奇素数
-    if config.q_is_prime() and q > 2:
+    if config.is_q_prime() and q > 2:
         if not in_field(a):
             print("*** ERROR: a不是域中元素 *** function: field_ele_times ***")
             return -1
@@ -176,7 +176,7 @@ def field_ele_times(a, b):
         else:
             return((a * b) % q)
     # q 为 2 的幂
-    elif config.q_is_power_of_two():
+    elif config.is_q_power_of_two():
         #m = math.log2(q)
         if not (in_field(a) and in_field(b)):
             print("*** ERROR: 参数不是二元扩域元素 *** function: field_ele_times ***")
@@ -204,7 +204,7 @@ def field_ele_g_pow_a(g, a):
 
     q = config.get_q()
     # q 为奇素数
-    if config.q_is_prime() and q > 2:
+    if config.is_q_prime() and q > 2:
         if not in_field(g):
             print("*** ERROR: a不是域中元素 *** function: field_ele_g_pow_a ***")
             return -1
@@ -220,7 +220,7 @@ def field_ele_g_pow_a(g, a):
                     x = field_ele_times(x, g)
             return x
     # q 为 2 的幂
-    elif config.q_is_power_of_two():
+    elif config.is_q_power_of_two():
         #m = math.log2(q)
         if not in_field(g):
             print("*** ERROR: 参数不是二元扩域元素 *** function: field_ele_g_pow_a ***")
@@ -254,14 +254,14 @@ output: 元素 a 的逆元素
 def field_ele_inverse_times(a):
     q = config.get_q()
     # q 为奇素数
-    if config.q_is_prime() and q > 2:
+    if config.is_q_prime() and q > 2:
         if not in_field(a):
             print("*** ERROR: a不是域中元素 *** function: field_ele_inverse_times ***")
             return -1
         else:
             return field_ele_g_pow_a(a, config.get_q() - 2)
     # q 为 2 的幂
-    elif config.q_is_power_of_two():
+    elif config.is_q_power_of_two():
         #m = math.log2(q)
         if not in_field(a):
             print("*** ERROR: 参数不是二元扩域元素 *** function: field_ele_inverse_times ***")
@@ -310,12 +310,12 @@ def ECG_ele_is_zero(p):
 def ECG_is_inverse_ele(p1, p2):
     q = config.get_q()
     # q 为素数
-    if config.q_is_prime():
+    if config.is_q_prime():
         if p1.x == p2.x and p1.y == -p2.y:
             return True
         else:
             return False
-    elif config.q_is_power_of_two():
+    elif config.is_q_power_of_two():
         if p1.x == p2.x and p2.y == p1.x + p1.y:
             return True
         else:
@@ -338,7 +338,7 @@ output: 椭圆曲线群中点(a+b)
 def ECG_ele_add(p1, p2):
     q = config.get_q()
     # Fp 上的椭圆曲线群
-    if config.q_is_prime():
+    if config.is_q_prime():
         if ECG_ele_is_zero(p1):
             return p2
         elif ECG_ele_is_zero(p2):
@@ -365,7 +365,7 @@ def ECG_ele_add(p1, p2):
             return Point(x, y)
 
     # F2^m 上的椭圆曲线
-    if config.q_is_power_of_two():
+    if config.is_q_power_of_two():
         if ECG_ele_is_zero(p1):
             return p2
         elif ECG_ele_is_zero(p2):
@@ -403,7 +403,7 @@ output: 点(P+P)
 def ECG_double_point(p):
     q = config.get_q()
     # Fp 上的椭圆曲线群
-    if config.q_is_prime():
+    if config.is_q_prime():
         if ECG_ele_is_zero(p):
             return p
         else:
@@ -414,7 +414,7 @@ def ECG_double_point(p):
             y = field_ele_sub(field_ele_times(lam, field_ele_sub(p.x, x)), p.y)
             return Point(x, y)
     # F2^m 上的椭圆曲线
-    if config.q_is_power_of_two():
+    if config.is_q_power_of_two():
         if ECG_ele_is_zero(p):
             return p
         else:
@@ -531,11 +531,11 @@ def public_key_verification(parameters, public_key):
     n = parameters['n']
     point_g = parameters['G']
     # q 为 2 的幂
-    if config.q_is_power_of_two():
+    if config.is_q_power_of_two():
         config.set_fx(parameters['f(x)'])
     q = config.get_q()
     # q 为奇素数
-    if config.q_is_prime() and q > 3:
+    if config.is_q_prime() and q > 3:
         if ECG_ele_is_zero(public_key):
             print("*** ERROR: 公钥为无穷远点 *** function: public_key_verification")
             print("无效")
@@ -558,7 +558,7 @@ def public_key_verification(parameters, public_key):
         print("有效")
         return True
     # q 为 2 的幂
-    elif config.q_is_power_of_two():
+    elif config.is_q_power_of_two():
         if ECG_ele_is_zero(public_key):
             print("*** ERROR: 公钥为无穷远点 *** function: public_key_verification")
             print("无效")

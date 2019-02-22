@@ -4,9 +4,9 @@
 q = 0
 q_prime = False
 q_2m = False
-def q_is_prime():
+def is_q_prime():
     return q_prime
-def q_is_power_of_two():
+def is_q_power_of_two():
     return q_2m
 
 def set_q(a):
