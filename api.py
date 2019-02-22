@@ -111,10 +111,11 @@ def SM2_decrypt_str(data, private_key_file):
     return Dec_Interface(data, sk)
 
 ### test SM2_encrypt_str and SM2_decrypt_str ###
-
+'''
 SM2_init()
 SM2_key_pair_gen()
 c = SM2_encrypt_str("hello world!", "public_key")
 print("密文：" + c)
 m = SM2_decrypt_str(c, "private_key")
 print("解密结果： " + m)
+'''
