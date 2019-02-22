@@ -11,6 +11,7 @@ def Dec_Interface(C, dB):
 	return M_
 
 ### test Enc_Interface() and Dec_Interface() ###
+'''
 M = '101001010110001010000000000000000000001010101010101010'
 PB = Point(115, 48)
 dB = 121
@@ -18,3 +19,4 @@ print('M ', M)
 C = Enc_Interface(M, PB)
 print('C ', C)
 print('M_', Dec_Interface(C, dB))
+'''
