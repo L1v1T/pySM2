@@ -32,7 +32,16 @@ def M_to_bits(input):
 				print('*** ERROR: 字节串中类型不为str或者int *** function：M_to_bits(input) ***')
 	return M
 ### test M_to_bits ###
-print(M_to_bits(['aa', 's']))
+#print(M_to_bits(['aa', 's']))
+
+def bits_to_M(M):
+	output = []
+	M = '0b'+M
+	M = bits_to_bytes(M)
+	output = bytes_to_str(M)
+	return output
+### test bits_to_M ###
+#print(bits_to_M('011000010110000101110011'))
 
 # hash函数
 def hash_function(m):
@@ -52,6 +61,7 @@ input：比特串Z，整数klen(表示要获得的密钥数据的比特长度，
 output：长度为klen的密钥数据比特串K
 '''
 def KDF(Z, klen):
+	v = config.get_v()
 	if(klen < (2**32-1)*v):
 		ct=0x00000001
 		H = []
@@ -86,7 +96,11 @@ def is_zero_bits(a):
 			return False
 	return True
 
-def Encryption(M):
+def Encryption(M, PB):
+	q = config.get_q()
+	n = config.get_n()
+	Gx = config.get_Gx()
+	Gy = config.get_Gy()
 	klen = len(M)
 	t = '000000'
 	while(is_zero_bits(t)):
@@ -94,7 +108,7 @@ def Encryption(M):
 		k = PRG_function(1, n-1)
 		# A2.1：计算椭圆曲线点C1=[k]G=(x1,y1)
 		# A2.2：按本文本第1部分4.2.8和4.2.4给出的细节，将C1的数据类型转换为比特串
-		C1 = ECG_k_point(k, G)
+		C1 = ECG_k_point(k, Point(Gx, Gy))
 		C1 = point_to_bytes(C1)
 		C1 = bytes_to_bits(C1)
 
@@ -125,14 +139,18 @@ def Encryption(M):
 	C3 = remove_0b_at_beginning(C3)
 	C = C1 + C2 + C3
 	return C
+
 ### test Encryption ###
 # 密钥对生成
+'''
 parameters = {  'q' : 211, 
                 'f(x)' : polynomial_zero(), 
                 'a' : 0, 
                 'b' : 207, 
                 'n' : 211, 
-                'G' : Point(2, 2)}
+                'Gx' : 2, 
+				'Gy' : 2
+			}
 key = key_pair_generation(parameters)
 dB = key[0]
 PB = key[1]
@@ -149,9 +167,11 @@ G = Point(2, 2)
 v = 256
 M = '101001010110001010000000000000000000001010101010101010'
 C = Encryption(M)
+'''
 
-
-def Decryption(C):
+def Decryption(C, dB):
+	a = config.get_a()
+	b = config.get_b()
 	# B1.1：从C中取出比特串C1
 	# B1.2：按本文本第1部分4.2.3和4.2.9给出的细节，将C1的数据类型转换为椭圆曲线上的点
 	# B1.3：验证C1是否满足椭圆曲线方程，若不满足则报错并退出
@@ -177,7 +197,8 @@ def Decryption(C):
 		print("*** ERROR: t为全0比特串 *** function: Decryption ***")
 		return -1
 	# B5：从C中取出比特串C2，计算M′ = C2 ⊕t
-	M_ = bin(int(C2, 2) ^ int(t, 2))
+	M_ = bin(int(C2, 2) ^ int(t, 2))	
+	M_ = padding_0_to_length(M_, klen)
 	# B6：计算u = Hash(x2 ∥ M′ ∥ y2)，从C中取出比特串C3，若u ̸= C3，则报错并退出
 	x2 = remove_0b_at_beginning(x2)
 	M_ = remove_0b_at_beginning(M_)
@@ -185,9 +206,10 @@ def Decryption(C):
 	u = hash_function(x2+M_+y2)
 	if(remove_0b_at_beginning(u) != remove_0b_at_beginning(C3)):
 		print("*** ERROR: u不等于C3 *** function: Decryption ***")
-		return -1
+		#return -1
 	# B7：输出明文M′
 	return M_
+
 ### test ###
 #dB = 121
 '''
