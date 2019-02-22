@@ -110,6 +110,7 @@ def bytes_to_bits(M):
 		s = s + i*(256**j)
 		j = j + 1
 	s = bin(s)
+	#s = padding_0_to_length(s, m)
 	M.reverse()
 	return s
 ### test bytes_to_bits ###
@@ -429,3 +430,31 @@ def bytes_to_point(a, b, S):
 	return point
 #config.set_q(1024)
 #print(bytes_to_point( 1, 0,[7, 0, 1, 0, 1]))
+
+def bytes_to_str(S):
+	temp = ''
+	string = ''
+	temp = remove_0b_at_beginning(bytes_to_bits(S))
+	temp = padding_0_to_length(temp, 8*math.ceil(len(temp)/8))
+	for i in range(0, math.ceil(len(temp)/8)):
+		string = string + chr(int(temp[i*8:(i+1)*8],2))
+	return string
+
+def str_to_bytes(x):
+	S = []
+	for i in x:
+		S.append(ord(i))
+	return S
+
+### test ###
+'''
+S = [255,1]
+print(bytes_to_str(S))
+
+x = 'ab'
+print(str_to_bytes(x))
+
+print(str_to_bytes(bytes_to_str(S)))
+x = 'hello world'
+print(bytes_to_str(str_to_bytes(x)))
+'''

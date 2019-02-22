@@ -7,6 +7,33 @@ from Point import *
 from config import *
 from binary import *
 
+def M_to_bits(input):
+	M = ''
+	if (type(input) == type('a')):
+		for i in input:
+			temp = int.from_bytes(i.encode('ascii'), byteorder='big', signed=True)
+			temp = int_to_bytes(temp, 1)
+			temp = remove_0b_at_beginning(bytes_to_bits(temp))
+			temp = padding_0_to_length(temp, 8)
+			M = M + temp
+	if(type(input) == type([])):
+		for i in input:
+			if (type(i) == type('a')):
+				for j in i:
+					temp = int.from_bytes(i.encode('ascii'), byteorder='big', signed=True)
+					temp = int_to_bytes(temp, 1)
+					temp = remove_0b_at_beginning(bytes_to_bits(temp))
+					temp = padding_0_to_length(temp, 8)
+					M = M + temp
+			elif (type(i) == type(0)):
+				M = remove_0b_at_beginning(bytes_to_bits(input))
+				M = padding_0_to_length(M, 8*math.ceil(len(M)/8))
+			else:
+				print('*** ERROR: 字节串中类型不为str或者int *** function：M_to_bits(input) ***')
+	return M
+### test M_to_bits ###
+print(M_to_bits(['aa', 's']))
+
 # hash函数
 def hash_function(m):
 	sha256 = hashlib.sha256()
@@ -120,7 +147,7 @@ n = 10
 G = Point(2, 2)
 #PB = Point(115, 48)
 v = 256
-M = '101111111111111111111111111110000001111111111111111111111111111111111'
+M = '101001010110001010000000000000000000001010101010101010'
 C = Encryption(M)
 
 
@@ -163,8 +190,11 @@ def Decryption(C):
 	return M_
 ### test ###
 #dB = 121
+'''
 a = config.get_a()
 b = config.get_b()
 M_ = Decryption(C)
-print('M ',M)
+print('M ', M)
+print('C ', C)
 print('M_', M_)
+'''
