@@ -15,8 +15,8 @@ def hash_function(m):
 	sha256 = padding_0_to_length(sha256, 32*8)
 	return sha256
 ### test hash_function ###
-print('1--',hash_function('akjkSsd'))
-print('2--',hash_function('asd'))
+#print('1--',hash_function('akjkSsd'))
+#print('2--',hash_function('asd'))
 #print('3--',hash_function('100000000101100001101100000000'))
 
 # 密钥派生函数

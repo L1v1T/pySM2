@@ -160,7 +160,7 @@ def ele_to_bytes(a):
 	#print("--- 域元素到字节串的转换 ---")
 	S = []
 	q = config.get_q()
-	if (isPrime_MR(q, 15) and q%2 ==1):   # q为奇素数
+	if (config.is_q_prime() and q%2 ==1):   # q为奇素数
 		if (a>=0 and a<=q-1):
 			t = math.ceil(math.log(q,2))
 			l = math.ceil(t/8)
@@ -168,7 +168,7 @@ def ele_to_bytes(a):
 		else:
 			print("*** ERROR: 域元素须在区间[0, q-1]上 *** function：ele_to_bytes(a) ***")
 			return -1;
-	elif is_Power_of_two(q):    # q为2的幂
+	elif config.is_q_power_of_two():    # q为2的幂
 		if type(a)==str and a[0:2] == '0b':
 			m = math.ceil(math.log(q, 2))
 			a = padding_0_to_length(a, m)
@@ -204,7 +204,7 @@ output：Fq中的元素a
 '''
 def bytes_to_ele(q, S):
 	a = ''
-	if (isPrime_MR(q, 15) and q%2 ==1):   # q为奇素数
+	if (config.is_q_prime() and q%2 ==1):   # q为奇素数
 		a = 0
 		t = math.ceil(math.log(q,2))
 		l = math.ceil(t/8)
@@ -212,7 +212,7 @@ def bytes_to_ele(q, S):
 		if not (a>=0 and a<=q-1):
 			print("*** ERROR: 域元素须在区间[0, q-1]上 *** function：bytes_to_ele(q, S) ***")
 			return -1;
-	elif is_Power_of_two(q):    # q为2的幂
+	elif config.is_q_power_of_two():    # q为2的幂
 		m = math.ceil(math.log(q, 2))
 		a = padding_0_to_length(a, m)
 		'''a = bytes_to_bits(S)
@@ -272,9 +272,9 @@ def ele_to_int(a):
 	#print("--- 域元素到字节串的转换 ---")
 	x = 0
 	q = config.get_q()
-	if (isPrime_MR(q, 15) and q%2 ==1):   # q为奇素数
+	if (config.is_q_prime() and q%2 ==1):   # q为奇素数
 		x = a
-	elif is_Power_of_two(q):    # q为2的幂
+	elif config.is_q_power_of_two():    # q为2的幂
 		if type(a)==str and a[0:2] == '0b':
 			m = math.log(q, 2)
 			if len(a)-2 == m:
@@ -418,10 +418,10 @@ def bytes_to_point(a, b, S):
 		x = int(x,2)
 	if(type(y) != type(1)):
 		y = int(y,2)
-	if (isPrime_MR(q, 15) and q%2 ==1):   # q为奇素数
+	if (config.is_q_prime() and q%2 ==1):   # q为奇素数
 		if (y**2)%q != (x**3 + a*x + b)%q:
 			return -1
-	elif is_Power_of_two(q):
+	elif config.is_q_power_of_two():
 		if (y**2 + x*y) != (x**3 + a*x + b):
 			return -1
 	# g. 
