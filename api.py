@@ -18,9 +18,9 @@ def SM2_key_pair_gen():
     print("私钥： " + str(key_pair[0]))
     print("公钥： ")
     print(key_pair[1])
-    sk = param
+    sk = config.get_parameters()
     sk['private key'] = key_pair[0]
-    pk = param
+    pk = config.get_parameters()
     pk['public key'] = bytes_to_str(point_to_bytes(key_pair[1]))
 
     fo = open(sk_file, "w", encoding = 'utf-8')
