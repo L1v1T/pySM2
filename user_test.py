@@ -19,6 +19,7 @@ while True:
         continue
 
 q = False
+result = ''
 while not q:
     data = ''
     while True:
@@ -27,7 +28,9 @@ while not q:
             q = True
             break
         elif sf == 's':
-            data = input("输入字符串内容：")
+            data = input("输入字符串内容（不输入表示使用上次计算结果作为输入）：")
+            if data == '':
+                data = result
             break
         elif sf == 'f':
             data = input("输入文件路径：")
