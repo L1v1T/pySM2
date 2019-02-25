@@ -1,7 +1,4 @@
 from SM2_Encryption import *
-import config
-from Integer import *
-from SM2_Code import *
 
 def Enc_Interface(M, PB):
 	

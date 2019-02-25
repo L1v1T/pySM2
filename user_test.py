@@ -11,6 +11,7 @@ while True:
     generate_keys = input("是否需要生成密钥对（y/n)：")
     if generate_keys == 'y' or generate_keys == 'Y':
         api.SM2_key_pair_gen()
+        print("密钥对生成完毕")
         break
     elif generate_keys == 'n' or generate_keys == 'N':
         break

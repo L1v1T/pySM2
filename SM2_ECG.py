@@ -1,9 +1,5 @@
-from Integer import *
-import config
-from SM2_Code import *
 import math
 from polynomial import *
-from Point import *
 import random
 import time
 

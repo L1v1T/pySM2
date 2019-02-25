@@ -1,11 +1,7 @@
 import hashlib
 import math
 from random import randint
-from SM2_Code import *
 from SM2_ECG import *
-from Point import *
-from config import *
-from binary import *
 
 def M_to_bits(input):
 	M = ''

@@ -1,5 +1,4 @@
 import math
-from Integer import *
 import config
 from Point import *
 from binary import *

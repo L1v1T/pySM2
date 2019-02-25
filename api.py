@@ -1,5 +1,4 @@
 from Interface import *
-from SM2_ECG import key_pair_generation
 
 # 初始化椭圆曲线参数 #
 def SM2_init(filename = ''):
@@ -15,9 +14,9 @@ def SM2_key_pair_gen():
     sk_file = 'private_key'
     param = config.get_parameters()
     key_pair = key_pair_generation(param)
-    print("私钥： " + str(key_pair[0]))
-    print("公钥： ")
-    print(key_pair[1])
+    #print("私钥： " + str(key_pair[0]))
+    #print("公钥： ")
+    #print(key_pair[1])
     sk = config.get_parameters()
     sk['private key'] = key_pair[0]
     pk = config.get_parameters()
