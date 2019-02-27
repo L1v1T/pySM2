@@ -62,3 +62,10 @@ def is_Power_of_two(n):
 	return False
 #if is_Power_of_two(45):
 #	print('true')
+
+# 求逆元
+def inverse(a, n):
+	a_ = fast_pow(a, n-2, n)%n
+	return a_
+### test inverse ###
+#print(inverse(3,7))
