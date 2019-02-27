@@ -92,6 +92,13 @@ def set_Gy(a):
 def get_Gy():
     return Gy
 
+h = -1
+def set_h(a):
+    global h
+    h = a
+def get_h():
+    return h
+
 # 设置参数 #
 def set_parameters(parameters):
     set_q(parameters['q'])
@@ -102,17 +109,26 @@ def set_parameters(parameters):
     set_n(parameters['n'])
     set_Gx(parameters['Gx'])
     set_Gy(parameters['Gy'])
+    # 如果是 DH 密钥协商则有余因子 h
+    if parameters.__contains__('h'):
+        set_h(parameters['h'])
 
 def get_parameters():
     param = {
         'q' : get_q(), 
-        'f(x)' : get_fx(), 
         'a' : get_a(), 
         'b' : get_b(), 
         'n' : get_n(), 
         'Gx' : get_Gx(), 
         'Gy' : get_Gy()
     }
+    if is_Power_of_two(get_q()):
+        dict_f = { 'f(x)' : get_fx() }
+        param.update(dict_f)
+    # 如果是 DH 密钥协商则有余因子 h
+    if get_h() != -1:
+        dict_h = { 'h' : get_h() }
+        param.update(dict_h)
     return param
 
 # 从读配置文件 #
@@ -140,3 +156,16 @@ def default_config():
 
 def get_v():
     return 256
+
+# 密钥协商默认参数 #
+'''
+parameters = {  'q' : 0x8542D69E4C044F18E8B92435BF6FF7DE457283915C45517D722EDB8B08F1DFC3, 
+                'f(x)' : 'NULL', 
+                'a' : 0x787968B4FA32C3FD2417842E73BBFEFF2F3C848B6831D7E0EC65228B3937E498, 
+                'b' : 0x63E4C6D3B23B0C849CF84241484BFE48F61D59A5B16BA06E6E12D1DA27C5249A, 
+                'n' : 0x8542D69E4C044F18E8B92435BF6FF7DD297720630485628D5AE74EE7C32E79B7, 
+                'Gx' : 0x0680512BCBB42C07D47349D2153B70C4E5D7FDFCBFA36EA1A85841B9E46E09A2, 
+                'Gy' : 0x02BB3A02D4AAADACAE24817A4CA3A1B014B5270432DB27D2, 
+                'h' : 1
+                }
+'''
