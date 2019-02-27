@@ -145,16 +145,10 @@ def Encryption(M, PB):
 	return C
 
 ### test Encryption ###
-# 密钥对生成
 '''
-parameters = {  'q' : 211, 
-                'f(x)' : polynomial_zero(), 
-                'a' : 0, 
-                'b' : 207, 
-                'n' : 211, 
-                'Gx' : 2, 
-				'Gy' : 2
-			}
+# 密钥对生成
+config.default_config()
+parameters = config.get_parameters()
 key = key_pair_generation(parameters)
 dB = key[0]
 PB = key[1]
@@ -170,7 +164,7 @@ G = Point(2, 2)
 #PB = Point(115, 48)
 v = 256
 M = '101001010110001010000000000000000000001010101010101010'
-C = Encryption(M)
+C = Encryption(M, PB)
 '''
 
 def Decryption(C, dB):
