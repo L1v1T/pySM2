@@ -1,10 +1,10 @@
 from SM2_Encryption import *
+from SM2_Signature import *
+from SM2_keyExchange import *
 
 def Enc_Interface(M, PB):
 	
-	q, fx, a, b, n, Gx, Gy = config.get_parameters()
 	M = M_to_bits(M)
-	PB = PB
 	C = Encryption(M, PB)
 	C = bits_to_M(C)
 	return C
@@ -16,22 +16,86 @@ def Dec_Interface(C, dB):
 	M_ = Decryption(C, dB)
 	return bits_to_M(M_)
 
-'''
+
 ### test Enc_Interface() and Dec_Interface() ###
-parameters = {  'q' : 211, 
-                'f(x)' : polynomial_zero(), 
-                'a' : 0, 
-                'b' : 207, 
-                'n' : 211, 
-                'Gx' : 2, 
-                'Gy' : 2
-                }
-config.set_parameters(parameters)
+'''
+config.default_config()
+parameters = config.get_parameters()
+key = key_pair_generation(parameters)
+dB = key[0]
+PB = key[1]
 M = ['a', 's']
-PB = Point(115, 48)
-dB = 121
 print('M ', M)
 C = Enc_Interface(M, PB)
 print('C ', C)
 print('M_', Dec_Interface(C, dB))
+'''
+
+def Sig_Interface(M, IDA, dA, PA):
+	M = M_to_bits(M)
+	Sig = Signature(M, IDA, dA, PA)
+	Sig = bytes_to_bits(Sig)
+	Sig = bits_to_M(Sig)
+	return Sig
+
+def Ver_Interface(M, Sig, IDA, dA, PA):
+	Sig = str_to_bytes(Sig)
+	M = M_to_bits(M)
+	if Verification(M, Sig, IDA, dA, PA) == False:
+		return False
+	return True
+
+### test Sig_Interface() and Ver_Interface() ###
+'''
+config.default_config()
+parameters = config.get_parameters()
+key = key_pair_generation(parameters)
+dA = key[0]
+PA = key[1]
+IDA = 'ALICE123@YAHOO.COM'
+M = ['a']
+print('M ', M)
+Sig = Sig_Interface(M, IDA, dA, PA)
+print('Sig ', Sig)
+Ver_Interface(M, Sig, IDA, dA, PA)
+'''
+
+def keyEX_Interface_get_ZA_ZB(IDA, IDB, PA, PB):
+	return get_ZA_ZB(IDA, IDB, PA, PB)
+
+def keyEX_Interface_1():
+	return key_generation_1()
+
+def keyEX_Interface_2(ZA, ZB, r_self, R_self, R_opposite, d_self, P_self, P_opposite, klen, is_send):
+	return key_generation_2(ZA, ZB, r_self, R_self, R_opposite, d_self, P_self, P_opposite, klen, is_send)
+
+def keyEX_Interface_3(S_target, S_test):
+	return key_generation_3(S_target, S_test)
+
+### test keyExchange ###
+'''
+config.default_config()
+parameters = config.get_parameters()
+key = key_pair_generation(parameters)
+dA = key[0]
+PA = key[1]
+key = key_pair_generation(parameters)
+dB = key[0]
+PB = key[1]
+klen = 128
+
+IDA = 'ALICE123@YAHOO.COM'
+IDB = 'BILL456@YAHOO.COM'
+RA, rA = keyEX_Interface_1()
+RB, rB = keyEX_Interface_1()
+ZA, ZB = keyEX_Interface_get_ZA_ZB(IDA, IDB, PA, PB)
+kB, SB, S2 = key_generation_2(ZA, ZB, rB, RB, RA, dB, PB, PA, klen, 0)
+print('kB', kB)
+print('---------------------------------------------------------')
+kA, SA, S1 = key_generation_2(ZA, ZB, rA, RA, RB, dA, PA, PB, klen, 1)
+print('kA', kA)
+#key_generation_B_1(IDA, IDB, RA, dB, PA, klen)
+#key_generation_A_2(IDA, IDB, rA, RA, RB, SB, dA, PB, klen)
+keyEX_Interface_3(SB, S1)
+keyEX_Interface_3(SA, S2)
 '''

@@ -4,41 +4,17 @@ from random import randint
 from SM2_ECG import *
 from Integer import inverse
 import config
+from Prepare import *
 
-# hash函数
-def hash_function(m):
-	sha256 = hashlib.sha256()
-	sha256.update(m.encode("utf8"))
-	sha256 = bin(int(sha256.hexdigest(), 16))
-	sha256 = padding_0_to_length(sha256, 32*8)
-	return sha256
-### test hash_function ###
-#print('1--',hash_function('akjkSsd'))
-#print('2--',hash_function('asd'))
-#print('3--',hash_function('100000000101100001101100000000'))
-
-def PRG_function(a, b):
-	return randint(a, b)
-
-def Signature(M, dA, PA):
+def Signature(M, IDA, dA, PA):
 	a = config.get_a()
-	a = bytes_to_bits(ele_to_bytes(a))
 	b = config.get_b()
-	b = bytes_to_bits(ele_to_bytes(b))
 	n = config.get_n()
 	Gx = config.get_Gx()
-	Gx_ = bytes_to_bits(ele_to_bytes(Gx))
 	Gy = config.get_Gy()
-	Gy_ = bytes_to_bits(ele_to_bytes(Gy))
-	ID = dA
-	ID = bytes_to_bits(ele_to_bytes(ID))
-	ENTL = int_to_bytes(len(ID), 2)
-	ENTL = bytes_to_bits(ENTL)
-	xA = bytes_to_bits(ele_to_bytes(PA.x))
-	yA = bytes_to_bits(ele_to_bytes(PA.y))
-	Z = hash_function(ENTL+ID+a+b+Gx_+Gy_+xA+yA)
+	ZA = get_Z(IDA, PA)
 	# A1：置M=ZA ∥ M
-	M_ = Z + M
+	M_ = ZA + M
 	# A2：计算e = Hv(M)，按本文本第1部分4.2.3和4.2.2给出的细节将e的数据类型转换为整数
 	e = hash_function(M_)
 	e = bytes_to_int(bits_to_bytes(e))
@@ -64,23 +40,13 @@ def Signature(M, dA, PA):
 		Sig.append(i)
 	return Sig
 
-def Verification(M, Sig, dA, PA):
+def Verification(M, Sig, IDA, dA, PA):
 	a = config.get_a()
-	a = bytes_to_bits(ele_to_bytes(a))
 	b = config.get_b()
-	b = bytes_to_bits(ele_to_bytes(b))
 	n = config.get_n()
 	Gx = config.get_Gx()
-	Gx_ = bytes_to_bits(ele_to_bytes(Gx))
 	Gy = config.get_Gy()
-	Gy_ = bytes_to_bits(ele_to_bytes(Gy))
-	ID = dA
-	ID = bytes_to_bits(ele_to_bytes(ID))
-	ENTL = int_to_bytes(len(ID), 2)
-	ENTL = bytes_to_bits(ENTL)
-	xA = bytes_to_bits(ele_to_bytes(PA.x))
-	yA = bytes_to_bits(ele_to_bytes(PA.y))
-	Z = hash_function(ENTL+ID+a+b+Gx_+Gy_+xA+yA)
+	ZA = get_Z(IDA, PA)
 	r = Sig[0:int(len(Sig)/2)]
 	s = Sig[int(len(Sig)/2): len(Sig)]
 	r = bytes_to_int(r)
@@ -88,7 +54,7 @@ def Verification(M, Sig, dA, PA):
 	if(r<1 or r>n-1 or s<1 or s>n-1):
 		print("wrong signature: r,s wrong range")
 		return False
-	M_ = Z + M
+	M_ = ZA + M
 	e = hash_function(M_)
 	e = bytes_to_int(bits_to_bytes(e))
 	t = (r + s) % n
@@ -107,20 +73,17 @@ def Verification(M, Sig, dA, PA):
 '''
 ### test Signature ###
 config.default_config()
-#dA = 121
-#Gx = config.get_Gx()
-#Gy = config.get_Gy()
-#PA = ECG_k_point(dA, Point(Gx,Gy))
 parameters = config.get_parameters()
 key = key_pair_generation(parameters)
 dA = key[0]
 PA = key[1]
+IDA = 'ALICE123@YAHOO.COM'
 M = '100'
-Sig = Signature(M, dA, PA)
+Sig = Signature(M, IDA, dA, PA)
 print(Sig)
 
 ### test Verification ###
-Verification(M, Sig, dA, PA)
+Verification(M, Sig, IDA, dA, PA)
 
 #print('ECG_k_point(2, PA)', ECG_k_point(2, Point(2,2)))
 #print('ECG_ele_add( ECG_k_point(1, PA), ECG_k_point(2, PA) )', ECG_k_point(4, ECG_k_point(2, Point(2,2))))
