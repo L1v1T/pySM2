@@ -118,3 +118,29 @@ print("密文：" + c)
 m = SM2_decrypt_str(c, "private_key")
 print("解密结果： " + m)
 '''
+
+# DH 密钥交换 #
+# 字符串输入 TODO #
+'''
+input: 
+    priv    私钥
+    pub     公钥
+    klen    协商的密钥长度
+output:
+    密钥
+'''
+def SM2_ageed_key_s(priv, pubk, klen):
+    pass
+
+# 文件输入 TODO #
+def SM2_agreed_key_f(priv, pubk, klen):
+    pass
+
+# 数字签名 #
+# 对字符串签名 TODO #
+def SM2_sig_s(priv, m):
+    pass
+
+# 对文件签名 TODO #
+def SM2_sig_f(priv, m):
+    pass
