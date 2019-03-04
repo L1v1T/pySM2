@@ -16,6 +16,7 @@ def Encryption(M, PB):
 	n = config.get_n()
 	Gx = config.get_Gx()
 	Gy = config.get_Gy()
+	h = config.get_h()
 	klen = len(M)
 	t = '000000'
 	while(is_zero_bits(t)):
@@ -28,10 +29,10 @@ def Encryption(M, PB):
 		C1 = point_to_bytes(C1)
 		C1 = bytes_to_bits(C1)
 		# A3：计算椭圆曲线点S=[h]PB，若S是无穷远点，则报错并退出
-		#S = ECG_k_point(h, G)
-		#if():
-		#	return -1
-
+		S = ECG_k_point(h, PB)
+		if S == ECG_ele_zero():
+			print('*** ERROR: S is infinite point *** function: Decryption ***')
+			return -1
 		# A4.1：计算椭圆曲线点[k]PB=(x2,y2)
 		# A4.2：按本文本第1部分4.2.5和4.2.4给出的细节，将坐标x2、y2的数据类型转换为比特串
 		#print("enc: PB = ", PB)
@@ -90,6 +91,7 @@ def Decryption(C, dB):
 	a = config.get_a()
 	b = config.get_b()
 	q = config.get_q()
+	h = config.get_h()
 	l = math.ceil(math.log(q, 2)/8)
 	# B1.1：从C中取出比特串C1
 	# B1.2：按本文本第1部分4.2.3和4.2.9给出的细节，将C1的数据类型转换为椭圆曲线上的点
@@ -105,10 +107,12 @@ def Decryption(C, dB):
 	#print('dec: l value', l)
 	C1 = bytes_to_point(a, b, bits_to_bytes(C1))
 	# B2：计算椭圆曲线点S=[h]C1，若S是无穷远点，则报错并退出
-
+	S = ECG_k_point(h, C1)
+	if S == ECG_ele_zero():
+		print('*** ERROR: S is infinite point *** function: Decryption ***')
+		return -1
 	# B3.1：计算[dB]C1=(x2,y2)
 	# B3.2：按本文本第1部分4.2.5和4.2.4给出的细节，将坐标x2、y2的数据类型转换为比特串
-
 	x2 = ECG_k_point(dB, C1).x
 	y2 = ECG_k_point(dB, C1).y
 	x2 = bytes_to_bits(ele_to_bytes(x2))
@@ -138,8 +142,6 @@ def Decryption(C, dB):
 ### test ###
 #dB = 121
 '''
-a = config.get_a()
-b = config.get_b()
 M_ = Decryption(C)
 print('M ', M)
 print('C ', C)
