@@ -31,6 +31,7 @@ print('C ', C)
 print('M_', Dec_Interface(C, dB))
 '''
 
+'''
 def Sig_Interface(M, IDA, dA, PA):
 	M = M_to_bits(M)
 	Sig = Signature(M, IDA, dA, PA)
@@ -38,10 +39,36 @@ def Sig_Interface(M, IDA, dA, PA):
 	Sig = bits_to_M(Sig)
 	return Sig
 
-def Ver_Interface(M, Sig, IDA, dA, PA):
+def Ver_Interface(M, Sig, IDA, PA):
 	Sig = str_to_bytes(Sig)
+	print(Sig)
 	M = M_to_bits(M)
-	if Verification(M, Sig, IDA, dA, PA) == False:
+	if Verification(M, Sig, IDA, PA) == False:
+		return False
+	return True
+'''
+def Sig_Interface(M, IDA, dA, PA):
+	M = M_to_bits(M)
+	Sig = Signature(M, IDA, dA, PA)
+	num = ''
+	for i in Sig:
+		i = "%03d" % i
+		num = num + i
+	Sig = str(hex(int(num)))
+	Sig = Sig[2:len(Sig)]
+	#Sig = bytes_to_bits(Sig)
+	#Sig = bits_to_M(Sig)
+	return Sig
+
+def Ver_Interface(M, Sig, IDA, PA):
+	Sig = int(Sig, 16)
+	Sig = "%0192d" % Sig
+	temp = str(Sig)
+	Sig = []
+	for i in range(0, 64):
+		Sig.append(int(temp[i*3:(i+1)*3]))
+	M = M_to_bits(M)
+	if Verification(M, Sig, IDA, PA) == False:
 		return False
 	return True
 
@@ -57,7 +84,7 @@ M = ['a']
 print('M ', M)
 Sig = Sig_Interface(M, IDA, dA, PA)
 print('Sig ', Sig)
-Ver_Interface(M, Sig, IDA, dA, PA)
+Ver_Interface(M, Sig, IDA, PA)
 '''
 
 def keyEX_Interface_get_ZA_ZB(IDA, IDB, PA, PB):
