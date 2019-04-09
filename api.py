@@ -129,12 +129,47 @@ input:
 output:
     密钥
 '''
-def SM2_ageed_key_s(priv, pubk, klen):
-    pass
+def SM2_gen_EXkey_s():
+    return keyEX_Interface_1()
+
+def SM2_gen_EXkey_f(priv, pub):
+    fo = open(priv, 'w')
+    pk, sk = keyEX_Interface_1()
+    fo.write(str(sk))
+    fo.close()
+    fo = open(pub, 'w')
+    fo.write(str(pk.x) + '\n')
+    fo.write(str(pk.y))
+    fo.close()
+
+def SM2_ageed_key_s(iid, oid, ir, iR, oR, ipriv, ipubk, opubk, klen):
+    ZA, ZB = keyEX_Interface_get_ZA_ZB(iid, oid, ipubk, opubk)
+    sharedKey, _, _ = keyEX_Interface_2(ZA, ZB, ir, iR, oR, ipriv, ipubk, opubk, klen, 1)
+    return sharedKey
+
 
 # 文件输入 TODO #
 def SM2_agreed_key_f(priv, pubk, klen):
     pass
+### test SM2_gen_EXkey_f ###
+'''
+SM2_init()
+SM2_key_pair_gen()
+dA = SM2_read_private_key("private_key")
+PA = SM2_read_public_key('public_key')
+SM2_key_pair_gen()
+dB = SM2_read_private_key("private_key")
+PB = SM2_read_public_key('public_key')
+IDA = 'ALICE123@YAHOO.COM'
+IDB = 'BILL456@YAHOO.COM'
+RA, rA = SM2_gen_EXkey_s()
+RB, rB = SM2_gen_EXkey_s()
+klen = 128
+print("A key")
+print(SM2_ageed_key_s(IDA, IDB, rA, RA, RB, dA, PA, PB, klen))
+print("B key")
+print(SM2_ageed_key_s(IDB, IDA, rB, RB, RA, dB, PB, PA, klen))
+'''
 
 # 数字签名 #
 '''
