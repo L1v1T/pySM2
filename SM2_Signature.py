@@ -52,22 +52,21 @@ def Verification(M, Sig, IDA, PA):
 	r = bytes_to_int(r)
 	s = bytes_to_int(s)
 	if(r<1 or r>n-1 or s<1 or s>n-1):
-		print("wrong signature: r,s wrong range")
+		#print("wrong signature: r,s wrong range")
 		return False
 	M_ = ZA + M
 	e = hash_function(M_)
 	e = bytes_to_int(bits_to_bytes(e))
 	t = (r + s) % n
 	if(t == 0):
-		print("wrong signature : t is 0")
+		#print("wrong signature : t is 0")
 		return False
 
 	x1 = ECG_ele_add( ECG_k_point(s, Point(Gx, Gy)), ECG_k_point(t, PA) ).x
 	R = (e + x1) % n
 	if R!=r:
-		print("wrong signature: R unequal r")
+		#print("wrong signature: R unequal r")
 		return False
-	print("true signature")
 	return True
 
 '''
