@@ -40,7 +40,7 @@ def Signature(M, IDA, dA, PA):
 		Sig.append(i)
 	return Sig
 
-def Verification(M, Sig, IDA, dA, PA):
+def Verification(M, Sig, IDA, PA):
 	a = config.get_a()
 	b = config.get_b()
 	n = config.get_n()
