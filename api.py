@@ -137,10 +137,78 @@ def SM2_agreed_key_f(priv, pubk, klen):
     pass
 
 # 数字签名 #
+'''
+input:
+    priv    私钥文件路径
+    pub     公钥文件路径
+    id      用户唯一标识符
+    m       对字符串操作时为待签名字符串，对文件操作时为文件路径
+    sig     待验证的签名
+output:
+    签名操作返回签名结果，验证操作返回签名的验证结果
+'''
 # 对字符串签名 TODO #
-def SM2_sig_s(priv, m):
-    pass
+def SM2_sig_s(priv, pub, id, m):
+    pk = SM2_read_public_key(pub)
+    sk = SM2_read_private_key(priv)
+    return Sig_Interface(m, id, sk, pk)
 
 # 对文件签名 TODO #
-def SM2_sig_f(priv, m):
-    pass
+def SM2_sig_f(priv, pub, id, m):
+    # get file data
+    fo = open(m, 'rb')
+    fl = fo.tell()
+    fo.seek(0, 0)
+    data = fo.read(fl)
+    fo.close()
+
+    # calculate signature
+    pk = SM2_read_public_key(pub)
+    sk = SM2_read_private_key(priv)
+    return Sig_Interface(str(data, encoding = 'utf-8'), id, sk, pk)
+
+# 对字符串认证 #
+def SM2_ver_s(pub, sig, id, m):
+    pk = SM2_read_public_key(pub)
+    return Ver_Interface(m, sig, id, pk)
+
+# 对文件认证 #
+def SM2_ver_f(pub, sig, id, m):
+    # get file data
+    fo = open(m, 'rb')
+    fl = fo.tell()
+    fo.seek(0, 0)
+    data = fo.read(fl)
+    fo.close()
+
+    # verify signature
+    pk = SM2_read_public_key(pub)
+    return Ver_Interface(str(data, encoding = 'utf-8'), sig, id, pk)
+
+### test SM2_sig_s and SM2_ver_s ###
+'''
+SM2_init()
+SM2_key_pair_gen()
+idA = 'Alice@mail.com'
+sigM = SM2_sig_s('private_key', 'public_key', idA, 'hello world')
+print('signature of \'hello world \' from Alice@mail.com')
+print(sigM)
+print('verify this signature')
+print(SM2_ver_s('public_key', sigM, idA, 'hello world'))
+'''
+
+### test SM2_sig_f and SM2_ver_f ###
+'''
+SM2_init()
+SM2_key_pair_gen()
+filename = 'sig_test_data'
+fo = open(filename, 'w')
+fo.write('hello world')
+fo.close()
+idA = 'Alice@mail.com'
+sigM = SM2_sig_f('private_key', 'public_key', idA, filename)
+print("signature of this file from Alice@mail.com")
+print(sigM)
+print('verify this signature')
+print(SM2_ver_f('public_key', sigM, idA, filename))
+'''
